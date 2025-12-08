@@ -4,21 +4,39 @@ import { Star } from 'lucide-react'
 export default function Testimonials() {
     const testimonials = [
         {
-            name: "Alex M.",
-            role: "University Student",
-            content: "MindEase helped me manage my anxiety during exam season. The AI chat was incredibly supportive.",
+            name: "Retik",
+            role: "Computer Science Student",
+            content: "Lumina's personalized resources have been a game-changer for my mental well-being. It's exactly what students need.",
             rating: 5,
         },
         {
-            name: "Jordan T.",
-            role: "Graduate Student",
-            content: "The community wall made me feel less alone. Knowing others share similar struggles is comforting.",
+            name: "Harmeet",
+            role: "Medical Student",
+            content: "I've never felt more understood. The community here is so supportive and non-judgmental.",
             rating: 5,
         },
         {
-            name: "Casey S.",
-            role: "College Junior",
-            content: "The counseling booking system is seamless. I finally got professional help easily and discreetly.",
+            name: "Jamshed",
+            role: "Engineering Graduate",
+            content: "The AI chatbot is surprisingly effective. It really helps me process my thoughts during stressful times.",
+            rating: 5,
+        },
+        {
+            name: "Utkarsh",
+            role: "Design Student",
+            content: "Booking a counseling session was so easy. I'm glad I took that step towards better mental health.",
+            rating: 5,
+        },
+        {
+            name: "Akash",
+            role: "Business Student",
+            content: "The daily check-ins help me stay grounded. Highly recommended app for anyone feeling overwhelmed.",
+            rating: 5,
+        },
+        {
+            name: "Gautam Gambhir",
+            role: "Sports Psychology Student",
+            content: "The mental toughness resources here are exceptional. They really help in maintaining focus and resilience under pressure.",
             rating: 5,
         },
     ]
@@ -33,7 +51,7 @@ export default function Testimonials() {
                     <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                         Stories from <span className="gradient-text">Our Community</span>
                     </h2>
-                    <p className="text-lg text-muted-foreground">See how MindEase is helping students</p>
+                    <p className="text-lg text-muted-foreground">See how Lumina is helping students</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

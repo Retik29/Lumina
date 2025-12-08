@@ -14,6 +14,7 @@ export default function Navbar() {
         { href: '/counseling', label: 'Counseling' },
         { href: '/emergency', label: 'Emergency' },
         { href: '/admin', label: 'Admin' },
+        { href: '/login', label: 'Login' },
     ]
 
     return (
@@ -24,7 +25,7 @@ export default function Navbar() {
                         <div className="p-2 rounded-lg bg-gradient-primary">
                             <Heart className="w-5 h-5 text-white" />
                         </div>
-                        <span className="gradient-text">MindEase</span>
+                        <span className="gradient-text">Lumina</span>
                     </Link>
 
                     {/* Desktop Menu */}

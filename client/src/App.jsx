@@ -7,11 +7,15 @@ import Community from './pages/Community'
 import Counseling from './pages/Counseling'
 import Emergency from './pages/Emergency'
 import Admin from './pages/Admin'
+import Login from './pages/Login'
+import Register from './pages/Register'
 
 function App() {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/assessment" element={<Assessment />} />
             <Route path="/resources" element={<Resources />} />

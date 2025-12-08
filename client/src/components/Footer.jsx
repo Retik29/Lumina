@@ -11,7 +11,7 @@ export default function Footer() {
                             <div className="p-2 rounded-lg bg-gradient-primary">
                                 <Heart className="w-4 h-4 text-white" />
                             </div>
-                            <span className="font-bold gradient-text">MindEase</span>
+                            <span className="font-bold gradient-text">Lumina</span>
                         </div>
                         <p className="text-sm text-muted-foreground">Supporting your mental wellness journey</p>
                     </div>
@@ -49,7 +49,7 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <a href="mailto:help@mindease.com" className="text-muted-foreground hover:text-primary transition-colors">
+                                <a href="mailto:help@lumina.com" className="text-muted-foreground hover:text-primary transition-colors">
                                     Contact Us
                                 </a>
                             </li>
@@ -77,7 +77,7 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
-                    <p>&copy; 2025 MindEase. All rights reserved. Supporting mental wellness for everyone.</p>
+                    <p>&copy; 2025 Lumina. All rights reserved. Supporting mental wellness for everyone.</p>
                 </div>
             </div>
         </footer>

@@ -14,7 +14,7 @@ export default function Hero() {
             <div className="relative max-w-4xl mx-auto text-center z-10">
                 <div className="inline-flex items-center gap-2 bg-card border border-primary/20 rounded-full px-4 py-2 mb-8 animate-float">
                     <Sparkles className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium gradient-text">Welcome to MindEase</span>
+                    <span className="text-sm font-medium gradient-text">Welcome to Lumina</span>
                 </div>
 
                 <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
