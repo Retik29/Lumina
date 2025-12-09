@@ -2,7 +2,10 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Send, Loader, Bot } from "lucide-react"
+import { Send, Loader, Bot, AlertCircle } from "lucide-react"
+import axios from "axios"
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
 
 export default function ChatbotComponent() {
     const [messages, setMessages] = useState([
@@ -10,6 +13,7 @@ export default function ChatbotComponent() {
     ])
     const [input, setInput] = useState("")
     const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState(null)
 
     const quickSuggestions = [
         "I'm feeling anxious",
@@ -19,28 +23,66 @@ export default function ChatbotComponent() {
     ]
 
     const handleSendMessage = async (text) => {
-        if (!text.trim()) return
+        if (!text.trim() || isLoading) return
 
-        setMessages((prev) => [...prev, { role: "user", content: text }])
+        const userMessage = text.trim()
+        setMessages((prev) => [...prev, { role: "user", content: userMessage }])
         setInput("")
         setIsLoading(true)
+        setError(null)
 
-        // Simulate AI response
-        setTimeout(() => {
-            const responses = [
-                "I hear you. That sounds challenging. Have you tried any coping techniques?",
-                "It's completely normal to feel this way. Would you like to explore some strategies?",
-                "Thank you for sharing. Your feelings are valid. What would help you right now?",
-                "I appreciate your trust. Let's work through this together.",
-            ]
-            const randomResponse = responses[Math.floor(Math.random() * responses.length)]
-            setMessages((prev) => [...prev, { role: "assistant", content: randomResponse }])
+        try {
+            // Prepare conversation history (excluding system message)
+            const conversationHistory = messages
+                .filter(msg => msg.role !== "system")
+                .map(msg => ({ role: msg.role, content: msg.content }))
+
+            // Call backend API
+            const response = await axios.post(
+                `${API_URL}/api/chatbot/message`,
+                {
+                    message: userMessage,
+                    conversationHistory: conversationHistory
+                },
+                {
+                    timeout: 30000 // 30 second timeout
+                }
+            )
+
+            if (response.data.success) {
+                setMessages((prev) => [...prev, { 
+                    role: "assistant", 
+                    content: response.data.message 
+                }])
+            } else {
+                throw new Error(response.data.message || "Failed to get response")
+            }
+        } catch (err) {
+            console.error("Chatbot error:", err)
+            const errorMessage = err.response?.data?.message || 
+                                err.message || 
+                                "Failed to get AI response. Please try again."
+            
+            setError(errorMessage)
+            
+            // Show error message in chat
+            setMessages((prev) => [...prev, { 
+                role: "assistant", 
+                content: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment." 
+            }])
+        } finally {
             setIsLoading(false)
-        }, 1000)
+        }
     }
 
     return (
         <div className="space-y-6">
+            {error && (
+                <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg flex items-center gap-2 text-sm">
+                    <AlertCircle className="w-4 h-4" />
+                    <span>{error}</span>
+                </div>
+            )}
             <Card className="h-[500px] flex flex-col p-6 bg-card/50 backdrop-blur border-border shadow-xl">
                 <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                     {messages.map((msg, i) => (
