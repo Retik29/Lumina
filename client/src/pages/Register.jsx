@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import api from '@/lib/api'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,11 +16,25 @@ export default function Register() {
         password: '',
     })
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault()
-        // Simulate registration
-        console.log(`Registering as ${role}`)
-        alert(`Registration successful for ${formData.name}`)
+        try {
+            // Include role in registration data
+            const { data } = await api.post('/auth/register', { ...formData, role });
+            if (data.success) {
+                // Auto login after register
+                localStorage.setItem('user', JSON.stringify({
+                    ...data,
+                    token: data.token
+                }));
+                alert(`Registration successful! Welcome ${data.name}`);
+                window.location.href = '/';
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            const message = error.response?.data?.message || 'Registration failed';
+            alert(message);
+        }
     }
 
     const handleChange = (e) => {

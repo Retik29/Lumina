@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import api from '@/lib/api'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,11 +15,30 @@ export default function Login() {
         password: '',
     })
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault()
-        // Simulate login
-        console.log(`Logging in as ${role}`)
-        alert(`Login successful for ${formData.email}`)
+        try {
+            const { data } = await api.post('/auth/login', formData);
+            if (data.success) {
+                // Save user data (including token) to localStorage
+                localStorage.setItem('user', JSON.stringify({
+                    ...data,
+                    token: data.token // Ensure token is explicitly saved or part of the object
+                }));
+                // Check if role matches
+                if (data.role !== role) {
+                    alert(`Warning: You logged in as a ${data.role} but selected ${role}. Redirecting to your actual dashboard.`);
+                }
+                alert(`Login successful! Welcome ${data.name}`);
+                // Redirect logic would go here, e.g., navigate('/dashboard')
+                // For now just reload or let user know
+                window.location.href = '/';
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            const message = error.response?.data?.message || 'Login failed';
+            alert(message);
+        }
     }
 
     const handleChange = (e) => {
