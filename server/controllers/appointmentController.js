@@ -1,78 +1,101 @@
-const Appointment = require("../models/Appointment");
+const Appointment = require('../models/Appointment');
+const User = require('../models/User');
 
-// @desc    Book an appointment
+// @desc    Book an appointment (Student only)
 // @route   POST /api/appointment/book
 // @access  Private (Student)
 const bookAppointment = async (req, res) => {
-    const { counselorId, date, time, concern } = req.body;
-
     try {
+        const { counselorId, date, time, concern } = req.body;
+
+        if (!counselorId || !date || !time || !concern) {
+            return res.status(400).json({ success: false, message: 'Please add all fields' });
+        }
+
+        // Verify counselor exists and is actually a counselor
+        const counselor = await User.findById(counselorId);
+        if (!counselor || counselor.role !== 'counselor') {
+            return res.status(400).json({ success: false, message: 'Invalid counselor' });
+        }
+
         const appointment = await Appointment.create({
-            studentId: req.user._id,
+            userId: req.user.id,
             counselorId,
             date,
             time,
             concern,
+            status: 'pending'
         });
 
-        res.status(201).json(appointment);
+        res.status(201).json({ success: true, data: appointment });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
 
-// @desc    Get logged in student's appointments
+// @desc    Get my appointments (Student only)
 // @route   GET /api/appointment/my
 // @access  Private (Student)
 const getMyAppointments = async (req, res) => {
     try {
-        const appointments = await Appointment.find({ studentId: req.user._id })
-            .populate("counselorId", "name email")
-            .sort({ date: 1 });
-        res.json(appointments);
+        const appointments = await Appointment.find({ userId: req.user.id })
+            .populate('counselorId', 'name email')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ success: true, count: appointments.length, data: appointments });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
 
-// @desc    Get logged in counselor's appointments
+// @desc    Get appointments for logged-in counselor
 // @route   GET /api/appointment/counselor
 // @access  Private (Counselor)
 const getCounselorAppointments = async (req, res) => {
     try {
-        const appointments = await Appointment.find({ counselorId: req.user._id })
-            .populate("studentId", "name email")
-            .sort({ date: 1 });
-        res.json(appointments);
+        const appointments = await Appointment.find({ counselorId: req.user.id })
+            .populate('userId', 'name email')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ success: true, count: appointments.length, data: appointments });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
 
-// @desc    Update appointment status
+// @desc    Update appointment status (Counselor only)
 // @route   PATCH /api/appointment/:id/status
 // @access  Private (Counselor)
 const updateAppointmentStatus = async (req, res) => {
-    const { status } = req.body;
-
     try {
-        const appointment = await Appointment.findById(req.params.id);
+        const { status } = req.body;
+        const { id } = req.params;
 
-        if (!appointment) {
-            return res.status(404).json({ message: "Appointment not found" });
+        if (!['approved', 'rejected'].includes(status)) {
+            return res.status(400).json({ success: false, message: 'Invalid status' });
         }
 
-        // Ensure only the assigned counselor can update
-        if (appointment.counselorId.toString() !== req.user._id.toString()) {
-            return res.status(401).json({ message: "Not authorized" });
+        let appointment = await Appointment.findById(id);
+
+        if (!appointment) {
+            return res.status(404).json({ success: false, message: 'Appointment not found' });
+        }
+
+        // Ensure appointment belongs to this counselor
+        if (appointment.counselorId.toString() !== req.user.id) {
+            return res.status(401).json({ success: false, message: 'Not authorized to update this appointment' });
         }
 
         appointment.status = status;
         await appointment.save();
 
-        res.json(appointment);
+        res.status(200).json({ success: true, data: appointment });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
 
@@ -80,5 +103,5 @@ module.exports = {
     bookAppointment,
     getMyAppointments,
     getCounselorAppointments,
-    updateAppointmentStatus,
+    updateAppointmentStatus
 };
