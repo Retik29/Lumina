@@ -4,11 +4,11 @@ import { Phone, AlertCircle, BookOpen, ExternalLink } from "lucide-react"
 
 export default function EmergencyComponent() {
     const hotlines = [
-        { name: "National Suicide Prevention Lifeline", number: "1-800-273-8255", available: "24/7" },
-        { name: "Crisis Text Line", text: "Text HOME to 741741", available: "24/7" },
+        { name: "Jeevan Aastha Helpline (Suicide & Emotional Distress)", number: "1800-233-3330", available: "24/7" },
+        { name: "Tele-MANAS — National Mental Health Helpline", text: "Text HOME to 14416", available: "24/7" },
         {
             name: "International Association for Suicide Prevention",
-            number: "Visit iasp.info/resources",
+            number: "Visit https://findahelpline.com/countries/in/topics/suicidal-thoughts",
             available: "24/7",
             link: true
         },
@@ -49,7 +49,7 @@ export default function EmergencyComponent() {
                     <div className="flex-1">
                         <h2 className="text-2xl font-bold text-foreground mb-2">If you're in immediate danger</h2>
                         <p className="text-muted-foreground mb-6 md:mb-0">
-                            Please call emergency services (911 in the US) or go to your nearest emergency room immediately.
+                            Please call emergency services (112 in India) or go to your nearest emergency room immediately.
                         </p>
                     </div>
                     <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-white gap-2 shadow-lg shadow-destructive/20 w-full md:w-auto">
@@ -72,7 +72,7 @@ export default function EmergencyComponent() {
                                 <p className="text-sm font-medium text-foreground">
                                     {hotline.link ? (
                                         <span className="flex items-center gap-1 text-primary">
-                                            Visit Website <ExternalLink className="w-3 h-3" />
+                                            <a href="https://findahelpline.com/countries/in/topics/suicidal-thoughts"> Visit Website</a> <ExternalLink className="w-3 h-3" />
                                         </span>
                                     ) : (
                                         hotline.number || hotline.text
