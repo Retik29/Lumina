@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { User, Shield, GraduationCap } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Login() {
     // Default to 'student' role
@@ -14,16 +15,18 @@ export default function Login() {
         email: '',
         password: '',
     })
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault()
         try {
             const { data } = await api.post('/auth/login', formData);
             if (data.success) {
-                localStorage.setItem('user', JSON.stringify({
+                login({
                     ...data,
                     token: data.token
-                }));
+                });
 
                 if (data.role !== role) {
                     alert(`Note: You logged in as a ${data.role}. Redirecting to your dashboard.`);

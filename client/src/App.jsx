@@ -11,23 +11,26 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import StudentDashboard from './pages/StudentDashboard'
 import CounselorDashboard from './pages/CounselorDashboard'
+import { AuthProvider } from './context/AuthContext'
 
 function App() {
     return (
-        <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/chatbot" element={<Chatbot />} />
-            <Route path="/assessment" element={<Assessment />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/counseling" element={<Counseling />} />
-            <Route path="/emergency" element={<Emergency />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/student-dashboard" element={<StudentDashboard />} />
-            <Route path="/counselor-dashboard" element={<CounselorDashboard />} />
-        </Routes>
+        <AuthProvider>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/chatbot" element={<Chatbot />} />
+                <Route path="/assessment" element={<Assessment />} />
+                <Route path="/resources" element={<Resources />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/counseling" element={<Counseling />} />
+                <Route path="/emergency" element={<Emergency />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/student-dashboard" element={<StudentDashboard />} />
+                <Route path="/counselor-dashboard" element={<CounselorDashboard />} />
+            </Routes>
+        </AuthProvider>
     )
 }
 

@@ -12,11 +12,32 @@ export default function CounselorDashboard() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem('user'))
-        if (storedUser) {
-            setUser(storedUser)
-            fetchAppointments()
+        const checkUserStatus = async () => {
+            const storedUser = JSON.parse(localStorage.getItem('user'))
+            if (storedUser) {
+                setUser(storedUser) // Set initial state from local storage to avoid flash
+
+                try {
+                    // Fetch latest user data from backend
+                    const { data } = await api.get('/auth/me');
+                    if (data.success) {
+                        const updatedUser = { ...storedUser, ...data.data };
+
+                        // Only update if there are changes (e.g. isApproved changed)
+                        if (JSON.stringify(updatedUser) !== JSON.stringify(storedUser)) {
+                            setUser(updatedUser);
+                            localStorage.setItem('user', JSON.stringify(updatedUser));
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to verify user status", error);
+                }
+
+                fetchAppointments()
+            }
         }
+
+        checkUserStatus()
     }, [])
 
     const fetchAppointments = async () => {
