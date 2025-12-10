@@ -26,21 +26,21 @@ const sendMessage = async (req, res) => {
 
         // Validate input
         if (!message || !message.trim()) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Message is required" 
+            return res.status(400).json({
+                success: false,
+                message: "Message is required"
             });
         }
 
         // Get API key from environment
         const apiKey = process.env.GROQ_API_KEY?.trim();
         if (!apiKey || apiKey === 'your_api_key_here') {
-            return res.status(500).json({ 
-                success: false, 
-                message: "AI service is not configured. Please add GROQ_API_KEY to your .env file." 
+            return res.status(500).json({
+                success: false,
+                message: "AI service is not configured. Please add GROQ_API_KEY to your .env file."
             });
         }
-        
+
         // Debug: Log first few characters (don't log full key for security)
         console.log("Using API key starting with:", apiKey.substring(0, 7) + "...");
 
@@ -74,9 +74,9 @@ const sendMessage = async (req, res) => {
         const aiResponse = response.data.choices[0]?.message?.content;
 
         if (!aiResponse) {
-            return res.status(500).json({ 
-                success: false, 
-                message: "No response from AI service" 
+            return res.status(500).json({
+                success: false,
+                message: "No response from AI service"
             });
         }
 
@@ -91,30 +91,30 @@ const sendMessage = async (req, res) => {
 
         // Handle specific error cases
         if (error.response?.status === 401) {
-            return res.status(401).json({ 
-                success: false, 
-                message: "Invalid API key. Please check your GROQ_API_KEY." 
+            return res.status(401).json({
+                success: false,
+                message: "Invalid API key. Please check your GROQ_API_KEY."
             });
         }
 
         if (error.response?.status === 429) {
-            return res.status(429).json({ 
-                success: false, 
-                message: "Rate limit exceeded. Please try again in a moment." 
+            return res.status(429).json({
+                success: false,
+                message: "Rate limit exceeded. Please try again in a moment."
             });
         }
 
         if (error.code === "ECONNABORTED") {
-            return res.status(504).json({ 
-                success: false, 
-                message: "Request timeout. Please try again." 
+            return res.status(504).json({
+                success: false,
+                message: "Request timeout. Please try again."
             });
         }
 
         // Generic error
-        res.status(500).json({ 
-            success: false, 
-            message: error.response?.data?.error?.message || "Failed to get AI response. Please try again." 
+        res.status(500).json({
+            success: false,
+            message: error.response?.data?.error?.message || "Failed to get AI response. Please try again."
         });
     }
 };

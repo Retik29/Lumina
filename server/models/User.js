@@ -18,6 +18,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['student', 'counselor', 'admin'],
         default: 'student'
+    },
+    speciality: {
+        type: String,
+        required: false // Only for counselors
+    },
+    credentials: {
+        type: String,
+        required: false // Link or text proof for counselors
+    },
+    isApproved: {
+        type: Boolean,
+        default: true // Student/Admin approved by default (Admin logic handled in controller)
     }
 }, { timestamps: true });
 

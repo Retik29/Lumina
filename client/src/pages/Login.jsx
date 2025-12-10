@@ -20,19 +20,25 @@ export default function Login() {
         try {
             const { data } = await api.post('/auth/login', formData);
             if (data.success) {
-                // Save user data (including token) to localStorage
                 localStorage.setItem('user', JSON.stringify({
                     ...data,
-                    token: data.token // Ensure token is explicitly saved or part of the object
+                    token: data.token
                 }));
-                // Check if role matches
+
                 if (data.role !== role) {
-                    alert(`Warning: You logged in as a ${data.role} but selected ${role}. Redirecting to your actual dashboard.`);
+                    alert(`Note: You logged in as a ${data.role}. Redirecting to your dashboard.`);
                 }
-                alert(`Login successful! Welcome ${data.name}`);
-                // Redirect logic would go here, e.g., navigate('/dashboard')
-                // For now just reload or let user know
-                window.location.href = '/';
+
+                // Redirect based on role
+                if (data.role === 'student') {
+                    window.location.href = '/student-dashboard';
+                } else if (data.role === 'counselor') {
+                    window.location.href = '/counselor-dashboard';
+                } else if (data.role === 'admin') {
+                    window.location.href = '/admin';
+                } else {
+                    window.location.href = '/';
+                }
             }
         } catch (error) {
             console.error('Login error:', error);

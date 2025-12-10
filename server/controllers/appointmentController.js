@@ -74,7 +74,7 @@ const updateAppointmentStatus = async (req, res) => {
         const { status } = req.body;
         const { id } = req.params;
 
-        if (!['approved', 'rejected'].includes(status)) {
+        if (!['approved', 'rejected', 'completed'].includes(status)) {
             return res.status(400).json({ success: false, message: 'Invalid status' });
         }
 

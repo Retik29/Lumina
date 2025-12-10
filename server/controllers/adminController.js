@@ -63,6 +63,7 @@ const getStats = async (req, res) => {
         const counselorCount = await User.countDocuments({ role: 'counselor' });
         const appointmentCount = await Appointment.countDocuments();
         const pendingAppointments = await Appointment.countDocuments({ status: 'pending' });
+        const pendingCounselors = await User.countDocuments({ role: 'counselor', isApproved: false });
 
         res.status(200).json({
             success: true,
@@ -70,7 +71,8 @@ const getStats = async (req, res) => {
                 students: studentCount,
                 counselors: counselorCount,
                 appointments: appointmentCount,
-                pending: pendingAppointments
+                pending: pendingAppointments,
+                pendingCounselors // Added new stat
             }
         });
     } catch (error) {
@@ -79,9 +81,55 @@ const getStats = async (req, res) => {
     }
 };
 
+// @desc    Get pending counselors
+// @route   GET /api/admin/pending-counselors
+// @access  Private (Admin)
+const getPendingCounselors = async (req, res) => {
+    try {
+        const counselors = await User.find({ role: 'counselor', isApproved: false }).select('-password');
+        res.status(200).json({ success: true, count: counselors.length, data: counselors });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
+// @desc    Approve counselor
+// @route   PATCH /api/admin/approve-counselor/:id
+// @access  Private (Admin)
+const approveCounselor = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user || user.role !== 'counselor') {
+            return res.status(404).json({ success: false, message: 'Counselor not found' });
+        }
+
+        user.isApproved = true;
+        await user.save();
+
+        res.status(200).json({ success: true, message: 'Counselor approved' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
+// @desc    Reject counselor (Delete)
+// @route   DELETE /api/admin/reject-counselor/:id
+// @access  Private (Admin)
+const rejectCounselor = async (req, res) => {
+    // Reusing delete logic but semantic difference
+    return deleteUser(req, res);
+};
+
+
 module.exports = {
     getAllUsers,
     getAllAppointments,
     deleteUser,
-    getStats
+    getStats,
+    getPendingCounselors,
+    approveCounselor,
+    rejectCounselor
 };

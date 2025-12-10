@@ -9,6 +9,8 @@ import Emergency from './pages/Emergency'
 import Admin from './pages/Admin'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import StudentDashboard from './pages/StudentDashboard'
+import CounselorDashboard from './pages/CounselorDashboard'
 
 function App() {
     return (
@@ -23,6 +25,8 @@ function App() {
             <Route path="/counseling" element={<Counseling />} />
             <Route path="/emergency" element={<Emergency />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/student-dashboard" element={<StudentDashboard />} />
+            <Route path="/counselor-dashboard" element={<CounselorDashboard />} />
         </Routes>
     )
 }

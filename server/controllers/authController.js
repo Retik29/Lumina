@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+    return jwt.sign({ id }, process.env.JWT_SECRET || 'dev-secret-123', {
         expiresIn: '30d',
     });
 };
@@ -13,14 +13,30 @@ const generateToken = (id) => {
 // @access  Public
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password, role, speciality, credentials } = req.body;
 
         if (!name || !email || !password || !role) {
             return res.status(400).json({ success: false, message: 'Please add all fields' });
         }
 
+        // 1. Admin Restriction
         if (role === 'admin') {
-            return res.status(400).json({ success: false, message: 'Admin registration not allowed' });
+            const allowedAdmins = ['retik', 'harmeet', 'jamshed'];
+            const lowerName = name.toLowerCase();
+            const isAllowed = allowedAdmins.some(admin => lowerName.includes(admin));
+
+            if (!isAllowed) {
+                return res.status(403).json({ success: false, message: 'Admin registration is restricted to specific personnel.' });
+            }
+        }
+
+        // 2. Counselor Validation
+        let isApproved = true;
+        if (role === 'counselor') {
+            if (!speciality || !credentials) {
+                return res.status(400).json({ success: false, message: 'Counselors must provide speciality and credentials.' });
+            }
+            isApproved = false; // Pending approval
         }
 
         const userExists = await User.findOne({ email });
@@ -37,7 +53,10 @@ const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role
+            role,
+            speciality,
+            credentials,
+            isApproved
         });
 
         if (user) {
@@ -69,6 +88,10 @@ const loginUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user && (await bcrypt.compare(password, user.password))) {
+            if (user.role === 'counselor' && !user.isApproved) {
+                return res.status(401).json({ success: false, message: 'Your account is pending approval by an administrator.' });
+            }
+
             res.json({
                 success: true,
                 _id: user.id,
@@ -86,7 +109,21 @@ const loginUser = async (req, res) => {
     }
 };
 
+// @desc    Get all counselors
+// @route   GET /api/auth/counselors
+// @access  Public
+const getCounselors = async (req, res) => {
+    try {
+        const counselors = await User.find({ role: 'counselor', isApproved: true }).select('-password');
+        res.status(200).json({ success: true, count: counselors.length, data: counselors });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+};
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    getCounselors
 };

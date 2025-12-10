@@ -14,6 +14,8 @@ export default function Register() {
         name: '',
         email: '',
         password: '',
+        speciality: '',
+        credentials: ''
     })
 
     const handleRegister = async (e) => {
@@ -22,13 +24,17 @@ export default function Register() {
             // Include role in registration data
             const { data } = await api.post('/auth/register', { ...formData, role });
             if (data.success) {
-                // Auto login after register
-                localStorage.setItem('user', JSON.stringify({
-                    ...data,
-                    token: data.token
-                }));
-                alert(`Registration successful! Welcome ${data.name}`);
-                window.location.href = '/';
+                if (role === 'counselor') {
+                    alert('Registration successful! Your account is pending approval. You can login now, but features will be limited until an admin approves your credentials.');
+                    window.location.href = '/login';
+                } else {
+                    localStorage.setItem('user', JSON.stringify({
+                        ...data,
+                        token: data.token
+                    }));
+                    alert(`Registration successful! Welcome ${data.name}`);
+                    window.location.href = '/';
+                }
             }
         } catch (error) {
             console.error('Registration error:', error);
@@ -112,6 +118,40 @@ export default function Register() {
                                     onChange={handleChange}
                                 />
                             </div>
+
+                            {role === 'counselor' && (
+                                <>
+                                    <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
+                                        <label className="text-sm font-medium leading-none" htmlFor="speciality">
+                                            Speciality
+                                        </label>
+                                        <Input
+                                            id="speciality"
+                                            name="speciality"
+                                            placeholder="e.g. Anxiety, Depression, Academic Stress"
+                                            required={role === 'counselor'}
+                                            value={formData.speciality}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
+                                        <label className="text-sm font-medium leading-none" htmlFor="credentials">
+                                            Proof of Credibility
+                                        </label>
+                                        <Input
+                                            id="credentials"
+                                            name="credentials"
+                                            placeholder="License No. or LinkedIn URL"
+                                            required={role === 'counselor'}
+                                            value={formData.credentials}
+                                            onChange={handleChange}
+                                        />
+                                        <p className="text-xs text-muted-foreground">
+                                            Your account will be pending approval by an administrator.
+                                        </p>
+                                    </div>
+                                </>
+                            )}
 
                             <Button type="submit" className="w-full bg-gradient-primary text-white shadow-lg hover:shadow-xl transition-all duration-300">
                                 Sign Up as {role.charAt(0).toUpperCase() + role.slice(1)}

@@ -4,7 +4,10 @@ const {
     getAllUsers,
     getAllAppointments,
     deleteUser,
-    getStats
+    getStats,
+    getPendingCounselors,
+    approveCounselor,
+    rejectCounselor
 } = require('../controllers/adminController');
 const { protect, restrictTo } = require('../middleware/authMiddleware');
 
@@ -16,5 +19,8 @@ router.get('/users', getAllUsers);
 router.get('/appointments', getAllAppointments);
 router.delete('/user/:id', deleteUser);
 router.get('/stats', getStats);
+router.get('/pending-counselors', getPendingCounselors);
+router.patch('/approve-counselor/:id', approveCounselor);
+router.delete('/reject-counselor/:id', rejectCounselor);
 
 module.exports = router;
