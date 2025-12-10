@@ -1,52 +1,90 @@
-🌟 Lumina — Digital Mental Health & Psychological Support System
+# 🌟 Lumina — Digital Mental Health & Psychological Support System
 
-A full-stack platform providing students in higher education with AI-assisted mental health support, counseling appointment booking, and role-based dashboards for Students, Counselors, and Admins.
+Lumina is a comprehensive full-stack platform designed to provide accessible mental health support for students in higher education. It connects students with counselors, offers AI-assisted support, and streamlines appointment management through role-based dashboards.
 
-🚀 Features
-🔹 1. Multi-Role Login System
+## 🚀 Key Features
 
-Student Login
+### 👤 User Roles
+- **Students**: Book appointments, view history, access AI chatbot (`/chatbot`), and manage profile.
+- **Counselors**: Manage appointments, view requests, and update availability.
+- **Admins**: Manage users (Students/Counselors), view system statistics, and oversee appointment flows.
 
-Counselor Login
+### 🤖 AI-Powered Support
+- Integrated **AI Chatbot** powered by Groq (Llama 3.1 70B) for 24/7 immediate support and guidance.
 
-Admin Login
+### 🔐 Security
+- **Authentication**: JWT-based secure login.
+- **Protection**: Role-based route protection.
+- **Password Security**: Password hashing with bcrypt.
 
-JWT-based authentication
+## 🛠️ Tech Stack
 
-Password hashing using bcrypt
+- **Frontend**: React (Vite), TailwindCSS, Lucide React
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB (Mongoose)
+- **AI Integration**: Groq API
+- **Authentication**: JSON Web Tokens (JWT)
 
-Admins cannot sign up through the UI (only added by DB)
+## 📦 Installation & Setup
 
-🔹 2. Students
+### Prerequisites
+- Node.js (v14+ recommended)
+- MongoDB installed locally or a MongoDB Atlas URI
 
-Book counseling appointments
+### 1. Clone the Repository
+```bash
+git clone <repository_url>
+cd lumina
+```
 
-View their previous bookings
+### 2. Backend Setup
+Navigate to the server directory and install dependencies:
+```bash
+cd server
+npm install
+```
 
-Access support features (AI chatbot, resources, etc.)
+Create a `.env` file in the `server` directory with the following variables:
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+GROQ_API_KEY=your_groq_api_key
+```
+> **Note**: Get your free Groq API key from [https://console.groq.com](https://console.groq.com).
 
-Secure token-based session management
+Start the backend server:
+```bash
+npm run dev
+# Server runs on http://localhost:5000
+```
 
-🔹 3. Counselors
+### 3. Frontend Setup
+Open a new terminal, navigate to the client directory, and install dependencies:
+```bash
+cd client
+npm install
+```
 
-View all appointments assigned to them
+Start the frontend development server:
+```bash
+npm run dev
+# Client runs on http://localhost:5173
+```
 
-Approve / Reject student requests
+## 📖 Usage Guide
 
-Manage session schedules
+1. **Register/Login**:
+   - Students can sign up directly.
+   - Counselors sign up but require Admin approval.
+   - Admins are pre-configured in the database.
 
-Track appointment history
+2. **Booking Appointments**:
+   - Students select a counselor and available slot.
+   - Counselors approve or reject the request.
 
-🔹 4. Admin Dashboard
+3. **Using the Chatbot**:
+   - Navigate to the Chatbot tab for instant AI support.
 
-View list of all users (students + counselors)
-
-View all appointments (with student + counselor details)
-
-Delete user accounts
-
-System statistics:
-
-Total students
-
-Total counselors
+## 📄 License
+This project is licensed under the ISC License.
