@@ -35,9 +35,14 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to DB before listening
-connectDB().then(() => {
+// Connect to DB
+connectDB();
+
+// Only listen if running directly (dev/local), not when imported by Vercel
+if (require.main === module) {
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
     });
-});
+}
+
+module.exports = app;
