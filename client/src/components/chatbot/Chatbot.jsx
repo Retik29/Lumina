@@ -4,8 +4,7 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Send, Loader, Bot, AlertCircle } from "lucide-react"
 import axios from "axios"
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000"
+import API_URL from "../../config/api"
 
 export default function ChatbotComponent() {
     const [messages, setMessages] = useState([
@@ -50,25 +49,25 @@ export default function ChatbotComponent() {
             )
 
             if (response.data.success) {
-                setMessages((prev) => [...prev, { 
-                    role: "assistant", 
-                    content: response.data.message 
+                setMessages((prev) => [...prev, {
+                    role: "assistant",
+                    content: response.data.message
                 }])
             } else {
                 throw new Error(response.data.message || "Failed to get response")
             }
         } catch (err) {
             console.error("Chatbot error:", err)
-            const errorMessage = err.response?.data?.message || 
-                                err.message || 
-                                "Failed to get AI response. Please try again."
-            
+            const errorMessage = err.response?.data?.message ||
+                err.message ||
+                "Failed to get AI response. Please try again."
+
             setError(errorMessage)
-            
+
             // Show error message in chat
-            setMessages((prev) => [...prev, { 
-                role: "assistant", 
-                content: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment." 
+            setMessages((prev) => [...prev, {
+                role: "assistant",
+                content: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment."
             }])
         } finally {
             setIsLoading(false)
@@ -95,8 +94,8 @@ export default function ChatbotComponent() {
                                 )}
                                 <div
                                     className={`px-4 py-3 rounded-2xl ${msg.role === "user"
-                                            ? "bg-gradient-primary text-white rounded-br-none"
-                                            : "bg-muted text-foreground rounded-bl-none"
+                                        ? "bg-gradient-primary text-white rounded-br-none"
+                                        : "bg-muted text-foreground rounded-bl-none"
                                         }`}
                                 >
                                     {msg.content}

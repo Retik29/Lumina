@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const connectDB = require('./config/db');
 
 // Load env vars
 dotenv.config();
@@ -10,18 +11,16 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        process.env.FRONTEND_URL
+    ].filter(Boolean),
+    credentials: true
+}));
 
-// Connect to Database
-const connectDB = async () => {
-    try {
-        const conn = await mongoose.connect(process.env.MONGO_URI);
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (error) {
-        console.error(`Error: ${error.message}`);
-        process.exit(1);
-    }
-};
+
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
