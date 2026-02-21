@@ -4,9 +4,10 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, Clock, User, CheckCircle2, AlertCircle } from "lucide-react"
+import { Calendar, Clock, User, CheckCircle2, AlertCircle, Sparkles, ShieldCheck } from "lucide-react"
 import api from '@/lib/api'
 import { useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from "motion/react"
 
 export default function CounselingComponent() {
     const navigate = useNavigate()
@@ -47,7 +48,7 @@ export default function CounselingComponent() {
 
         try {
             if (!formData.counselorId) {
-                setError("Please select a counselor")
+                setError("Please select a counselor from the previous tab.")
                 setSubmitting(false)
                 return
             }
@@ -71,142 +72,222 @@ export default function CounselingComponent() {
         setFormData({ ...formData, counselorId: id })
     }
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    }
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        show: { 
+            opacity: 1, 
+            y: 0, 
+            transition: { type: "spring", stiffness: 100, damping: 20 }
+        }
+    }
+
     if (submitted) {
         return (
-            <Card className="p-8 text-center bg-card/50 backdrop-blur border-border shadow-xl">
-                <div className="w-20 h-20 mx-auto bg-gradient-primary rounded-full flex items-center justify-center mb-6 animate-float">
-                    <CheckCircle2 className="w-10 h-10 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-foreground mb-2">Request Submitted</h2>
-                <p className="text-muted-foreground">Your appointment request has been sent. Redirecting...</p>
-            </Card>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+                <Card className="p-12 text-center bg-white/40 backdrop-blur-xl border-white/40 shadow-2xl rounded-[2.5rem] relative overflow-hidden max-w-2xl mx-auto mt-12">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-primary/10 blur-[80px] rounded-full pointer-events-none" />
+                    <div className="relative z-10 flex flex-col items-center">
+                        <div className="w-24 h-24 mx-auto bg-primary/10 rounded-[2rem] flex items-center justify-center mb-8 shadow-inner">
+                            <CheckCircle2 className="w-12 h-12 text-primary" />
+                        </div>
+                        <h2 className="text-4xl font-serif text-foreground mb-4">Sanctuary Reserved</h2>
+                        <p className="text-muted-foreground text-lg font-light max-w-md mb-8">
+                            Your session request has been gently sent to the counselor. You'll be redirected to your dashboard momentarily.
+                        </p>
+                        <div className="w-12 h-1 bg-primary/20 rounded-full overflow-hidden">
+                            <motion.div 
+                                initial={{ width: 0 }} 
+                                animate={{ width: "100%" }} 
+                                transition={{ duration: 3, ease: "linear" }}
+                                className="h-full bg-primary" 
+                            />
+                        </div>
+                    </div>
+                </Card>
+            </motion.div>
         )
     }
 
     return (
-        <Tabs defaultValue="counselors" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/50 p-1 rounded-xl mb-8">
-                <TabsTrigger value="counselors" className="rounded-lg data-[state=active]:bg-gradient-primary data-[state=active]:text-white">Select Counselor</TabsTrigger>
-                <TabsTrigger value="request" className="rounded-lg data-[state=active]:bg-gradient-primary data-[state=active]:text-white">Book Session</TabsTrigger>
-            </TabsList>
+        <div className="space-y-12 relative z-10 w-full max-w-4xl mx-auto">
+            {/* Ambient Background Glow */}
+            <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
-            <TabsContent value="counselors" className="space-y-4">
-                {loading ? (
-                    <p>Loading counselors...</p>
-                ) : counselors.length === 0 ? (
-                    <p className="text-center text-muted-foreground">No counselors available at the moment.</p>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {counselors.map((counselor) => (
-                            <Card
-                                key={counselor._id}
-                                onClick={() => selectCounselor(counselor._id)}
-                                className={`p-6 border-border bg-card/50 backdrop-blur hover:border-primary/50 transition-all duration-300 group cursor-pointer ${formData.counselorId === counselor._id ? 'border-primary ring-1 ring-primary' : ''}`}
-                            >
-                                <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                                        <User className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-foreground mb-1">{counselor.name}</h3>
-                                        <p className="text-sm text-primary font-medium mb-2">{counselor.email}</p>
-                                        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
-                                            <Clock className="w-3 h-3" />
-                                            Available this week
-                                        </div>
-                                        <Button
-                                            size="sm"
-                                            className={`border-0 ${formData.counselorId === counselor._id ? 'bg-primary text-white' : 'bg-primary/10 text-primary hover:bg-primary hover:text-white'}`}
-                                        >
-                                            {formData.counselorId === counselor._id ? 'Selected' : 'Select Counselor'}
-                                        </Button>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                )}
-            </TabsContent>
+            {/* Header Area */}
+            <div className="text-center space-y-2 shrink-0 relative z-10">
+            </div>
 
-            <TabsContent value="request">
-                <Card className="p-6 md:p-8 bg-card/50 backdrop-blur border-border">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {error && (
-                            <div className="p-3 rounded bg-red-100 dark:bg-red-900/20 text-red-600 text-sm flex items-center gap-2">
-                                <AlertCircle className="w-4 h-4" />
-                                {error}
-                            </div>
-                        )}
-                        {!formData.counselorId && (
-                            <div className="p-3 rounded bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 text-sm flex items-center gap-2">
-                                <AlertCircle className="w-4 h-4" />
-                                Please go to "Select Counselor" tab and choose a counselor first.
-                            </div>
-                        )}
+            <Tabs defaultValue="counselors" className="w-full flex flex-col items-center relative z-10">
+                {/* Minimal Pill Tabs */}
+                <TabsList className="flex w-auto mx-auto h-auto bg-white/40 backdrop-blur-md border border-white/40 p-1.5 rounded-full shadow-sm mb-12">
+                    <TabsTrigger 
+                        value="counselors" 
+                        className="rounded-full px-8 py-3 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                    >
+                        Select Counselor
+                    </TabsTrigger>
+                    <TabsTrigger 
+                        value="request" 
+                        className="rounded-full px-8 py-3 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                    >
+                        Reserve Session
+                    </TabsTrigger>
+                </TabsList>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-foreground">Preferred Date *</label>
-                                <div className="relative">
-                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                    <Input
-                                        type="date"
-                                        value={formData.date}
-                                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                        required
-                                        className="pl-10 bg-background/50 border-primary/20 focus-visible:ring-primary/50"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-foreground">Preferred Time *</label>
-                                <div className="relative">
-                                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                    <Input
-                                        type="time"
-                                        value={formData.time}
-                                        onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                                        required
-                                        className="pl-10 bg-background/50 border-primary/20 focus-visible:ring-primary/50"
-                                    />
-                                </div>
-                            </div>
+                <TabsContent value="counselors" className="w-full mt-0 outline-none">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground/50">
+                            <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
+                            <p className="font-serif italic text-lg">Finding available guides...</p>
                         </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-foreground">What would you like to discuss?</label>
-                            <Textarea
-                                value={formData.concern}
-                                onChange={(e) => setFormData({ ...formData, concern: e.target.value })}
-                                placeholder="Share what's on your mind... (required)"
-                                required
-                                className="bg-background/50 border-primary/20 focus-visible:ring-primary/50 min-h-[120px]"
-                            />
+                    ) : counselors.length === 0 ? (
+                        <div className="text-center py-20">
+                            <p className="text-xl font-serif italic text-muted-foreground">No counselors available at the moment.</p>
                         </div>
-
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                id="anonymous"
-                                checked={formData.anonymous}
-                                onChange={(e) => setFormData({ ...formData, anonymous: e.target.checked })}
-                                className="w-4 h-4 rounded border-primary/20 text-primary focus:ring-primary"
-                            />
-                            <label htmlFor="anonymous" className="text-sm text-muted-foreground cursor-pointer select-none">
-                                Keep session details private (Counselor will still see your name)
-                            </label>
-                        </div>
-
-                        <Button
-                            type="submit"
-                            disabled={submitting || !formData.counselorId}
-                            className="w-full bg-gradient-primary hover:opacity-90 text-white h-12 text-lg"
+                    ) : (
+                        <motion.div 
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="show"
+                            className="grid grid-cols-1 md:grid-cols-2 gap-6"
                         >
-                            {submitting ? 'Submitting...' : 'Request Counseling Session'}
-                        </Button>
-                    </form>
-                </Card>
-            </TabsContent>
-        </Tabs>
+                            {counselors.map((counselor) => {
+                                const isSelected = formData.counselorId === counselor._id
+                                return (
+                                    <motion.div key={counselor._id} variants={itemVariants}>
+                                        <Card
+                                            onClick={() => selectCounselor(counselor._id)}
+                                            className={`p-8 bg-white/40 backdrop-blur-xl border-white/40 rounded-[2.5rem] group cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5
+                                                ${isSelected ? 'ring-2 ring-primary bg-white/80 shadow-lg' : 'shadow-sm'}
+                                            `}
+                                        >
+                                            <div className="flex items-start gap-5">
+                                                <div className={`w-14 h-14 rounded-3xl flex items-center justify-center transition-colors duration-500 shadow-sm
+                                                    ${isSelected ? 'bg-primary text-white' : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white'}
+                                                `}>
+                                                    <User className="w-6 h-6" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h3 className="text-xl font-serif text-foreground mb-1">{counselor.name}</h3>
+                                                    <p className="text-xs uppercase tracking-widest text-primary font-bold mb-4">{counselor.email}</p>
+                                                    
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground/80 font-light mb-6">
+                                                        <Clock className="w-4 h-4 text-primary/50" />
+                                                        Available this week
+                                                    </div>
+                                                    
+                                                    <Button
+                                                        size="sm"
+                                                        className={`w-full rounded-full transition-all duration-300 font-medium
+                                                            ${isSelected ? 'bg-primary text-white hover:bg-primary/90' : 'bg-white text-foreground border border-black/5 shadow-sm hover:bg-primary hover:text-white'}
+                                                        `}
+                                                    >
+                                                        {isSelected ? 'Selected Guide' : 'Choose Guide'}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    </motion.div>
+                                )
+                            })}
+                        </motion.div>
+                    )}
+                </TabsContent>
+
+                <TabsContent value="request" className="w-full mt-0 outline-none">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+                        <Card className="p-8 md:p-12 bg-white/40 backdrop-blur-xl border-white/40 shadow-xl shadow-primary/5 rounded-[2.5rem]">
+                            <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
+                                
+                                {error && (
+                                    <div className="p-4 rounded-2xl bg-destructive/5 border border-destructive/10 text-destructive text-sm flex items-center gap-3">
+                                        <AlertCircle className="w-5 h-5 shrink-0" />
+                                        {error}
+                                    </div>
+                                )}
+                                
+                                {!formData.counselorId && !error && (
+                                    <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 text-primary/80 text-sm flex items-center gap-3">
+                                        <ShieldCheck className="w-5 h-5 shrink-0" />
+                                        Please select a guide from the previous tab before reserving your session.
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <label className="text-xs uppercase tracking-widest font-bold text-muted-foreground/60 ml-2">Preferred Date *</label>
+                                        <div className="relative">
+                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
+                                            <Input
+                                                type="date"
+                                                value={formData.date}
+                                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                                required
+                                                className="pl-12 h-14 rounded-full bg-white/60 border-white/40 focus-visible:ring-primary/30 shadow-sm transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-xs uppercase tracking-widest font-bold text-muted-foreground/60 ml-2">Preferred Time *</label>
+                                        <div className="relative">
+                                            <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/50" />
+                                            <Input
+                                                type="time"
+                                                value={formData.time}
+                                                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                                                required
+                                                className="pl-12 h-14 rounded-full bg-white/60 border-white/40 focus-visible:ring-primary/30 shadow-sm transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <Textarea
+                                        value={formData.concern}
+                                        onChange={(e) => setFormData({ ...formData, concern: e.target.value })}
+                                        placeholder="Share what's on your mind... (required)"
+                                        required
+                                        className="bg-white/60 border-white/40 focus-visible:ring-primary/30 min-h-[160px] rounded-3xl resize-none shadow-sm transition-all p-5 font-light"
+                                    />
+                                </div>
+
+                                <div className="flex items-start gap-4 p-5 rounded-3xl bg-white/40 border border-white/40">
+                                    <div className="flex items-center h-5 mt-0.5">
+                                        <input
+                                            type="checkbox"
+                                            id="anonymous"
+                                            checked={formData.anonymous}
+                                            onChange={(e) => setFormData({ ...formData, anonymous: e.target.checked })}
+                                            className="w-5 h-5 rounded border-primary/30 text-primary focus:ring-primary bg-white shadow-sm cursor-pointer"
+                                        />
+                                    </div>
+                                    <label htmlFor="anonymous" className="text-sm text-foreground/80 cursor-pointer select-none leading-relaxed">
+                                        <span className="font-medium block mb-1">Keep details private</span>
+                                        <span className="text-muted-foreground font-light text-xs">Your counselor will see your name to prepare for the session, but your specific concerns will remain sealed until the meeting.</span>
+                                    </label>
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    disabled={submitting || !formData.counselorId}
+                                    className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary h-14 text-lg font-medium shadow-xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none mt-4"
+                                >
+                                    {submitting ? 'Securing your spot...' : 'Reserve Session'}
+                                </Button>
+                            </form>
+                        </Card>
+                    </motion.div>
+                </TabsContent>
+            </Tabs>
+        </div>
     )
 }

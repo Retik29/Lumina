@@ -1,13 +1,17 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, Heart } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import ProfileDropdown from './ProfileDropdown'
+import { Button } from './ui/button'
+import { motion, AnimatePresence } from 'motion/react'
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
     const { user } = useAuth()
+    const location = useLocation()
 
+    // Navbar links
     const links = [
         { href: '/', label: 'Home' },
         { href: '/chatbot', label: 'AI Chat' },
@@ -16,82 +20,101 @@ export default function Navbar() {
         { href: '/community', label: 'Community' },
         { href: '/counseling', label: 'Counseling' },
         { href: '/emergency', label: 'Emergency' },
-        { href: '/admin', label: 'Admin' },
     ]
 
     return (
-        <nav className="sticky top-0 z-50 bg-card/80 backdrop-blur-md border-b border-border shadow-lg">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-                        <div className="p-2 rounded-lg bg-gradient-primary">
-                            <Heart className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="gradient-text">Lumina</span>
-                    </Link>
+        <nav className="fixed top-0 left-0 right-0 z-100 px-4 sm:px-8 py-6 pointer-events-none">
+            <div className="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
 
-                    {/* Desktop Menu */}
-                    <div className="hidden md:flex gap-1 items-center">
-                        {links.map((link) => (
+                {/* Logo - Serif and Italic like Hero */}
+                <Link to="/" className="flex items-center gap-2 group  bg-white/40 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-sm">
+                    <span className="font-serif text-2xl italic tracking-tight text-foreground">Lumina</span>
+                </Link>
+
+                {/* Desktop Menu - Minimal Pill Style */}
+                <div className="hidden md:flex gap-1 items-center bg-white/40 backdrop-blur-md border border-white/20 px-2 py-1.5 rounded-full shadow-sm">
+                    {links.map((link) => {
+                        const isActive = location.pathname === link.href
+                        return (
                             <Link
                                 key={link.href}
                                 to={link.href}
-                                className="px-4 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-gradient-primary hover:text-white transition-all duration-300"
+                                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-500 ${isActive
+                                        ? 'bg-white text-primary shadow-sm'
+                                        : 'text-foreground/60 hover:text-foreground hover:bg-white/30'
+                                    }`}
                             >
                                 {link.label}
                             </Link>
-                        ))}
+                        )
+                    })}
+                </div>
+
+                {/* Right CTAs */}
+                <div className="flex items-center gap-3">
+                    <div className="hidden md:flex items-center gap-2">
+                        {!user && (
+                            <Button asChild variant="ghost" className="rounded-full text-sm font-medium px-6">
+                                <Link to="/login">Login</Link>
+                            </Button>
+                        )}
                         {user ? (
                             <ProfileDropdown />
                         ) : (
-                            <Link
-                                to="/login"
-                                className="px-4 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-gradient-primary hover:text-white transition-all duration-300"
-                            >
-                                Login
-                            </Link>
+                            <Button asChild variant="default" className="rounded-full px-8">
+                                <Link to="/register">Sign Up</Link>
+                            </Button>
                         )}
                     </div>
 
-                    {/* Mobile Menu Button */}
+                    {/* Mobile Menu Button - Visible ONLY on mobile */}
                     <button
-                        className="md:hidden p-2 rounded-lg hover:bg-primary/10 transition-colors"
+                        className="md:hidden w-11 h-11 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-white/20 text-foreground shadow-sm"
                         onClick={() => setIsOpen(!isOpen)}
                     >
-                        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                        {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                     </button>
                 </div>
-
-                {/* Mobile Menu */}
-                {isOpen && (
-                    <div className="md:hidden pb-4 space-y-2">
-                        {links.map((link) => (
-                            <Link
-                                key={link.href}
-                                to={link.href}
-                                className="block px-4 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-gradient-primary hover:text-white transition-all duration-300"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                        {!user && (
-                            <Link
-                                to="/login"
-                                className="block px-4 py-2 rounded-lg text-sm font-medium text-foreground hover:bg-gradient-primary hover:text-white transition-all duration-300"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                Login
-                            </Link>
-                        )}
-                        {user && (
-                            <div className="px-4 py-2">
-                                <ProfileDropdown />
-                            </div>
-                        )}
-                    </div>
-                )}
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                        className="md:hidden absolute top-24 left-4 right-4 bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/40 shadow-2xl pointer-events-auto"
+                    >
+                        <div className="flex flex-col gap-2">
+                            {links.map((link, i) => (
+                                <motion.div
+                                    key={link.href}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.05 }}
+                                >
+                                    <Link
+                                        to={link.href}
+                                        className="block px-6 py-4 rounded-2xl text-xl font-serif italic text-foreground/80 hover:bg-primary/5 hover:text-primary transition-all"
+                                        onClick={() => setIsOpen(false)}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </motion.div>
+                            ))}
+                            <div className="h-px bg-primary/5 my-4" />
+                            {!user && (
+                                <Button asChild className="w-full py-7 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20">
+                                    <Link to="/register" onClick={() => setIsOpen(false)}>
+                                        Begin Journey
+                                    </Link>
+                                </Button>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </nav>
     )
 }
