@@ -3,7 +3,8 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, Play, BookOpen, Sparkles } from "lucide-react"
+import { Search, Play, BookOpen, Sparkles, ArrowRight, Clock } from "lucide-react"
+import { motion, AnimatePresence } from "motion/react"
 
 export default function ResourcesComponent() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -37,81 +38,142 @@ export default function ResourcesComponent() {
         )
     }
 
+    // Animation variants for staggered card loading
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    }
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20, scale: 0.95 },
+        show: { 
+            opacity: 1, 
+            y: 0, 
+            scale: 1,
+            transition: { type: "spring", stiffness: 100, damping: 20 }
+        },
+        exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
+    }
+
     return (
-        <div className="space-y-8">
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <div className="space-y-12 relative z-10 w-full max-w-5xl mx-auto">
+            
+            {/* Ambient Background Glow */}
+            <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+
+            {/* Premium Search Bar */}
+            <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative max-w-2xl mx-auto"
+            >
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/50" />
                 <Input
-                    placeholder="Search resources..."
+                    placeholder="Search your sanctuary..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 h-12 border-primary/20 bg-card/50 backdrop-blur focus-visible:ring-primary/50"
+                    className="pl-14 pr-6 h-16 rounded-full bg-white/60 backdrop-blur-xl border-white/40 focus-visible:ring-primary/30 text-lg shadow-sm shadow-black/5"
                 />
-            </div>
+            </motion.div>
 
-            <Tabs defaultValue="meditation" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/50 p-1 rounded-xl">
-                    <TabsTrigger value="meditation" className="rounded-lg data-[state=active]:bg-gradient-primary data-[state=active]:text-white">Meditation</TabsTrigger>
-                    <TabsTrigger value="exercises" className="rounded-lg data-[state=active]:bg-gradient-primary data-[state=active]:text-white">Exercises</TabsTrigger>
-                    <TabsTrigger value="strategies" className="rounded-lg data-[state=active]:bg-gradient-primary data-[state=active]:text-white">Strategies</TabsTrigger>
+            <Tabs defaultValue="meditation" className="w-full flex flex-col items-center">
+                {/* Minimal Pill Tabs */}
+                <TabsList className="flex w-auto mx-auto h-auto bg-white/40 backdrop-blur-md border border-white/40 p-1.5 rounded-full shadow-sm mb-12">
+                    <TabsTrigger 
+                        value="meditation" 
+                        className="rounded-full px-8 py-3 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                    >
+                        Meditation
+                    </TabsTrigger>
+                    <TabsTrigger 
+                        value="exercises" 
+                        className="rounded-full px-8 py-3 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                    >
+                        Exercises
+                    </TabsTrigger>
+                    <TabsTrigger 
+                        value="strategies" 
+                        className="rounded-full px-8 py-3 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                    >
+                        Strategies
+                    </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="meditation" className="mt-6 space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {filteredResources("meditation").map((item, i) => (
-                            <Card key={i} className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50 bg-card/50 backdrop-blur group">
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">{item.title}</h3>
-                                        <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
-                                        <div className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
-                                            <Sparkles className="w-3 h-3" />
-                                            {item.duration}
-                                        </div>
-                                    </div>
-                                    <Button size="icon" className="rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors">
-                                        <Play className="w-4 h-4 ml-0.5" />
-                                    </Button>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                </TabsContent>
+                {/* Tab Contents mapped dynamically for clean structure */}
+                {["meditation", "exercises", "strategies"].map((tabValue) => (
+                    <TabsContent key={tabValue} value={tabValue} className="w-full mt-0 outline-none">
+                        <motion.div 
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="show"
+                            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                        >
+                            <AnimatePresence mode="popLayout">
+                                {filteredResources(tabValue).map((item, i) => (
+                                    <motion.div key={item.title} variants={itemVariants} layout>
+                                        <Card className="h-full p-8 bg-white/40 backdrop-blur-xl border-white/40 hover:shadow-xl hover:shadow-primary/5 rounded-[2.5rem] group overflow-hidden relative transition-all duration-500 hover:-translate-y-1">
+                                            
+                                            {/* Subtle Hover Gradient */}
+                                            <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                            
+                                            <div className="relative z-10 flex flex-col h-full justify-between gap-8">
+                                                <div>
+                                                    {tabValue === "strategies"}
+                                                    
+                                                    <h3 className="text-2xl font-serif text-foreground mb-3 group-hover:translate-x-1 transition-transform duration-500">
+                                                        {item.title}
+                                                    </h3>
+                                                    <p className="text-muted-foreground font-light leading-relaxed">
+                                                        {item.description}
+                                                    </p>
+                                                </div>
 
-                <TabsContent value="exercises" className="mt-6 space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {filteredResources("exercises").map((item, i) => (
-                            <Card key={i} className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50 bg-card/50 backdrop-blur group">
-                                <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">{item.title}</h3>
-                                <p className="text-sm text-muted-foreground mb-4">{item.description}</p>
-                                <Button size="sm" variant="outline" className="w-full group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
-                                    Start Exercise
-                                </Button>
-                            </Card>
-                        ))}
-                    </div>
-                </TabsContent>
+                                                <div className="flex items-center justify-between mt-auto">
+                                                    {tabValue === "meditation" && (
+                                                        <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full bg-white text-primary shadow-sm border border-black/5">
+                                                            <Clock className="w-3 h-3 stroke-3" />
+                                                            {item.duration}
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <Button 
+                                                        size={tabValue === "meditation" ? "icon" : "default"} 
+                                                        variant={tabValue === "strategies" ? "link" : "default"}
+                                                        className={`
+                                                            ${tabValue === "meditation" ? "w-12 h-12 rounded-full bg-primary hover:bg-primary/90 text-primary shadow-md active:scale-95 transition-all ml-auto" : ""}
+                                                            ${tabValue === "exercises" ? "w-full rounded-full bg-white text-foreground hover:bg-primary hover:text-primary border border-black/5 shadow-sm transition-all font-medium py-6" : ""}
+                                                            ${tabValue === "strategies" ? "p-0 text-primary hover:text-primary/80 font-medium ml-auto" : ""}
+                                                        `}
+                                                    >
+                                                        {tabValue === "meditation" && <Play className="w-5 h-5 ml-1" />}
+                                                        {tabValue === "exercises" && "Begin Exercise"}
+                                                        {tabValue === "strategies" && (
+                                                            <span className="flex items-center gap-2">Read Guide <ArrowRight className="w-4 h-4" /></span>
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
 
-                <TabsContent value="strategies" className="mt-6 space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {filteredResources("strategies").map((item, i) => (
-                            <Card key={i} className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50 bg-card/50 backdrop-blur group">
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                                        <BookOpen className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">{item.title}</h3>
-                                        <p className="text-sm text-muted-foreground mb-3">{item.description}</p>
-                                        <Button size="sm" variant="link" className="p-0 h-auto text-primary">
-                                            Read more →
-                                        </Button>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                </TabsContent>
+                            {/* Empty State */}
+                            {filteredResources(tabValue).length === 0 && (
+                                <motion.div 
+                                    initial={{ opacity: 0 }} 
+                                    animate={{ opacity: 1 }} 
+                                    className="col-span-full py-12 text-center"
+                                >
+                                    <p className="text-xl font-serif italic text-muted-foreground">No resources found matching your search.</p>
+                                </motion.div>
+                            )}
+                        </motion.div>
+                    </TabsContent>
+                ))}
             </Tabs>
         </div>
     )
