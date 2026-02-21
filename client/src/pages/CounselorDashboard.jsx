@@ -70,10 +70,10 @@ export default function CounselorDashboard() {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'approved': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-            case 'rejected': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-            case 'completed': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-            default: return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
+            case 'approved': return 'bg-success/10 text-success'
+            case 'rejected': return 'bg-destructive/10 text-destructive'
+            case 'completed': return 'bg-info/10 text-info'
+            default: return 'bg-warning/10 text-warning'
         }
     }
 
@@ -90,14 +90,14 @@ export default function CounselorDashboard() {
 
                 <div className="space-y-6">
                     {user?.role === 'counselor' && !user?.isApproved && (
-                        <Card className="border-yellow-500/50 bg-yellow-500/10 mb-6">
+                        <Card className="border-warning/50 bg-warning/10 mb-6">
                             <CardContent className="flex items-center gap-4 p-4">
-                                <div className="p-2 rounded-full bg-yellow-500/20 text-yellow-600 dark:text-yellow-400">
+                                <div className="p-2 rounded-full bg-warning/20 text-warning">
                                     <Clock className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-lg text-yellow-700 dark:text-yellow-400">Account Pending Approval</h3>
-                                    <p className="text-yellow-600/90 dark:text-yellow-400/90">
+                                    <h3 className="font-semibold text-lg text-warning-foreground">Account Pending Approval</h3>
+                                    <p className="text-warning-foreground/90">
                                         Your counselor account is currently under review by an administrator. You will not receive any appointment requests until approved.
                                     </p>
                                 </div>
@@ -153,7 +153,7 @@ export default function CounselorDashboard() {
                                                         <Button
                                                             size="sm"
                                                             variant="outline"
-                                                            className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
+                                                            className="text-success border-success/20 hover:bg-success/10 hover:text-success"
                                                             onClick={() => handleStatusUpdate(apt._id, 'approved')}
                                                         >
                                                             <CheckCircle2 className="w-4 h-4 mr-1" />
@@ -162,7 +162,7 @@ export default function CounselorDashboard() {
                                                         <Button
                                                             size="sm"
                                                             variant="outline"
-                                                            className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                                                            className="text-destructive border-destructive/20 hover:bg-destructive/10 hover:text-destructive"
                                                             onClick={() => handleStatusUpdate(apt._id, 'rejected')}
                                                         >
                                                             <XCircle className="w-4 h-4 mr-1" />
@@ -174,7 +174,7 @@ export default function CounselorDashboard() {
                                                     <Button
                                                         size="sm"
                                                         variant="outline"
-                                                        className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                                        className="text-info border-info/20 hover:bg-info/10 hover:text-info"
                                                         onClick={() => handleStatusUpdate(apt._id, 'completed')}
                                                     >
                                                         <CheckCircle2 className="w-4 h-4 mr-1" />

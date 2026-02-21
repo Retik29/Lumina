@@ -35,10 +35,10 @@ export default function StudentDashboard() {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'approved': return 'text-green-500 bg-green-100 dark:bg-green-900/20'
-            case 'rejected': return 'text-red-500 bg-red-100 dark:bg-red-900/20'
-            case 'completed': return 'text-blue-500 bg-blue-100 dark:bg-blue-900/20'
-            default: return 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900/20'
+            case 'approved': return 'text-success bg-success/10 border border-success/20'
+            case 'rejected': return 'text-destructive bg-destructive/10 border border-destructive/20'
+            case 'completed': return 'text-info bg-info/10 border border-info/20'
+            default: return 'text-warning bg-warning/10 border border-warning/20'
         }
     }
 
