@@ -8,7 +8,7 @@ export default function Testimonials() {
     const testimonials = [
         { name: "Retik", role: "CS Student", content: "Lumina is a game-changer for my well-being. Exactly what students need." },
         { name: "Harmeet", role: "Med Student", content: "I've never felt more understood. The community is so supportive and non-judgmental." },
-        { name: "Jamshed", role: "Graduate", content: "The AI chatbot is surprisingly effective. It really helps me process my thoughts." },
+        { name: "Jamshed", role: "Graduate", content: "Sage AI is surprisingly effective. It really helps me process my thoughts." },
         { name: "Utkarsh", role: "Design Student", content: "Booking a counseling session was so easy. Best step I've taken this year." },
         { name: "Akash", role: "Business Student", content: "The daily check-ins help me stay grounded. Highly recommended app." },
         { name: "Ishita", role: "Psychology Student", content: "Finally an app that understands the nuance of student mental health!" },

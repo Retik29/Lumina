@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 
 export default function Features() {
     const features = [
-        { title: "AI Chatbot", description: "Talk to our AI about your feelings and get instant support and suggestions" },
+        { title: "Sage AI", description: "Talk to our AI about your feelings and get instant support and suggestions" },
         { title: "Self-Assessment", description: "Understand your mental health with our guided wellness questionnaire" },
         { title: "Resources", description: "Access meditation guides, breathing exercises, and coping strategies" },
         { title: "Community Wall", description: "Connect with peers anonymously and share your journey" },

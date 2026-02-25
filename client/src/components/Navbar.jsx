@@ -14,7 +14,7 @@ export default function Navbar() {
     // Navbar links
     const links = [
         { href: '/', label: 'Home' },
-        { href: '/chatbot', label: 'AI Chat' },
+        { href: '/chatbot', label: 'Sage AI' },
         { href: '/assessment', label: 'Assessment' },
         { href: '/resources', label: 'Resources' },
         { href: '/community', label: 'Community' },
@@ -40,8 +40,8 @@ export default function Navbar() {
                                 key={link.href}
                                 to={link.href}
                                 className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-500 ${isActive
-                                        ? 'bg-white text-primary shadow-sm'
-                                        : 'text-foreground/60 hover:text-foreground hover:bg-white/30'
+                                    ? 'bg-white text-primary shadow-sm'
+                                    : 'text-foreground/60 hover:text-foreground hover:bg-white/30'
                                     }`}
                             >
                                 {link.label}

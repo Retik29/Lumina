@@ -9,7 +9,7 @@ import API_URL from "../../config/api"
 
 export default function ChatbotComponent() {
     const [messages, setMessages] = useState([
-        { role: "assistant", content: "Hello. I'm here to listen and support you. How are you feeling today?" },
+        { role: "assistant", content: "Hello. I'm Sage, your personal AI companion. I'm here to listen and support you. How are you feeling today?" },
     ])
     const [input, setInput] = useState("")
     const [isLoading, setIsLoading] = useState(false)
@@ -78,7 +78,7 @@ export default function ChatbotComponent() {
         <div className="flex flex-col flex-1 w-full max-w-4xl mx-auto space-y-4 min-h-0">
 
             {error && (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-destructive/5 border border-destructive/10 text-destructive px-4 py-3 rounded-2xl flex items-center gap-3 text-sm shrink-0"
@@ -95,7 +95,7 @@ export default function ChatbotComponent() {
                     <div className="absolute inset-0 overflow-y-auto custom-scrollbar space-y-4 pr-3 px-2 sm:px-4 pb-4">
                         <AnimatePresence initial={false}>
                             {messages.map((msg, i) => (
-                                <motion.div 
+                                <motion.div
                                     key={i}
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -109,11 +109,10 @@ export default function ChatbotComponent() {
                                             </div>
                                         )}
                                         <div
-                                            className={`px-5 py-4 rounded-full ${
-                                                msg.role === "user"
+                                            className={`px-5 py-4 rounded-full ${msg.role === "user"
                                                     ? "bg-linear-to-r from-primary to-primary/50 text-background rounded-br-md shadow-md"
                                                     : "bg-white text-foreground rounded-bl-md font-serif text-md"
-                                            }`}
+                                                }`}
                                         >
                                             {msg.content}
                                         </div>
@@ -121,9 +120,9 @@ export default function ChatbotComponent() {
                                 </motion.div>
                             ))}
                         </AnimatePresence>
-                        
+
                         {isLoading && (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className="flex justify-start"

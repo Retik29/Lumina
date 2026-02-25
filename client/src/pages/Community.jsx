@@ -17,6 +17,7 @@ export default function Community() {
                 </div>
                 <CommunityComponent />
             </main>
+            <Footer />
         </div>
     )
 }
