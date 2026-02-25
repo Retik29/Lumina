@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Heart } from 'lucide-react'
+import { Menu, X, Heart, Activity } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import ProfileDropdown from './ProfileDropdown'
 import { Button } from './ui/button'
@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'motion/react'
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
-    const { user } = useAuth()
+    const { user, logout } = useAuth()
     const location = useLocation()
 
     // Navbar links
@@ -54,14 +54,14 @@ export default function Navbar() {
                 <div className="flex items-center gap-3">
                     <div className="hidden md:flex items-center gap-2">
                         {!user && (
-                            <Button asChild variant="ghost" className="rounded-full text-sm font-medium px-6">
+                            <Button asChild variant="ghost" className="rounded-full text-sm font-medium px-6 bg-white/30 backdrop-blur-md border border-white/20 hover:bg-white/50 hover:shadow-sm text-foreground/80 hover:text-foreground transition-all duration-300">
                                 <Link to="/login">Login</Link>
                             </Button>
                         )}
                         {user ? (
                             <ProfileDropdown />
                         ) : (
-                            <Button asChild variant="default" className="rounded-full px-8">
+                            <Button asChild variant="default" className="rounded-full px-8 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300">
                                 <Link to="/register">Sign Up</Link>
                             </Button>
                         )}
@@ -104,12 +104,37 @@ export default function Navbar() {
                                 </motion.div>
                             ))}
                             <div className="h-px bg-primary/5 my-4" />
-                            {!user && (
-                                <Button asChild className="w-full py-7 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20">
-                                    <Link to="/register" onClick={() => setIsOpen(false)}>
-                                        Begin Journey
+                            {user ? (
+                                <>
+                                    <Link
+                                        to={user.role === 'counselor' ? '/counselor-dashboard' : user.role === 'admin' ? '/admin' : '/student-dashboard'}
+                                        className="flex items-center gap-3 px-6 py-4 rounded-2xl text-lg font-medium text-primary bg-primary/5 hover:bg-primary/10 transition-all"
+                                        onClick={() => setIsOpen(false)}
+                                    >
+                                        <Activity className="w-5 h-5" />
+                                        My Journey
                                     </Link>
-                                </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full py-6 rounded-2xl text-lg font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/5"
+                                        onClick={() => { logout(); setIsOpen(false); }}
+                                    >
+                                        Sign Out
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button asChild variant="ghost" className="w-full py-6 rounded-2xl text-lg font-medium bg-white/50 border border-white/40">
+                                        <Link to="/login" onClick={() => setIsOpen(false)}>
+                                            Login
+                                        </Link>
+                                    </Button>
+                                    <Button asChild className="w-full py-7 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20">
+                                        <Link to="/register" onClick={() => setIsOpen(false)}>
+                                            Begin Journey
+                                        </Link>
+                                    </Button>
+                                </>
                             )}
                         </div>
                     </motion.div>

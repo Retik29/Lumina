@@ -4,7 +4,7 @@ import api from '@/lib/api'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { User, Shield, GraduationCap, Eye, EyeOff, Loader2, AlertCircle, Heart, ArrowLeft } from 'lucide-react'
+import { User, Shield, GraduationCap, Eye, EyeOff, Loader2, AlertCircle, ArrowLeft, Activity, Sparkles } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { motion, AnimatePresence } from 'motion/react'
 
@@ -206,15 +206,30 @@ export default function Login() {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-primary text-lg font-medium transition-all active:scale-95 disabled:opacity-70 disabled:hover:scale-100 mt-4"
+                                className="w-full h-14 rounded-full bg-gradient-to-b from-white from-10% to-secondary to-95% shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 text-primary text-lg font-semibold transition-all duration-300 active:scale-95 disabled:opacity-70 disabled:hover:scale-100 mt-4 border border-white/40"
                             >
                                 {isLoading ? (
                                     <Loader2 className="w-6 h-6 animate-spin" />
                                 ) : (
-                                    `Enter as ${role.charAt(0).toUpperCase() + role.slice(1)}`
+                                    <span className="flex items-center gap-2">
+                                        <Sparkles className="w-5 h-5" />
+                                        Enter as {role.charAt(0).toUpperCase() + role.slice(1)}
+                                    </span>
                                 )}
                             </Button>
                         </form>
+                        {/* Journey Tracker Hint */}
+                        <div className="mt-6 p-4 rounded-2xl bg-primary/5 border border-primary/10">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-xl bg-primary/10">
+                                    <Activity className="w-4 h-4 text-primary" />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-semibold text-foreground">Journey Tracker</p>
+                                    <p className="text-[10px] text-muted-foreground leading-relaxed">Track your meditations, exercises & counseling sessions after login.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </Card>
 
