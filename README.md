@@ -5,12 +5,21 @@ Lumina is a comprehensive full-stack platform designed to provide accessible men
 ## 🚀 Key Features
 
 ### 👤 User Roles
-- **Students**: Book appointments, view history, access AI chatbot (`/chatbot`), and manage profile.
+- **Students**: Book appointments, view history, access Sage AI (`/chatbot`), participate in the Community Wall (`/community`), and manage profile.
 - **Counselors**: Manage appointments, view requests, and update availability.
 - **Admins**: Manage users (Students/Counselors), view system statistics, and oversee appointment flows.
 
-### 🤖 AI-Powered Support
-- Integrated **AI Chatbot** powered by Groq (Llama 3.1 70B) for 24/7 immediate support and guidance.
+### 🤖 Sage AI — Intelligent Companion
+- Integrated **Sage AI** powered by Groq (Llama 3.1 70B) for 24/7 immediate support and guidance.
+- Conversational interface with context-aware responses.
+- Quick suggestion prompts for common mental health topics.
+
+### 💬 Community Wall
+- **Anonymous posting** — share thoughts in a safe, judgment-free space.
+- **Likes & comments** — engage with others while staying anonymous.
+- **Pre-seeded content** — launches with realistic posts to foster participation.
+- **Real-time feed** — new posts appear instantly without page refresh.
+- **Share functionality** — Web Share API with clipboard fallback.
 
 ### 🔐 Security
 - **Authentication**: JWT-based secure login.
@@ -83,8 +92,14 @@ npm run dev
    - Students select a counselor and available slot.
    - Counselors approve or reject the request.
 
-3. **Using the Chatbot**:
-   - Navigate to the Chatbot tab for instant AI support.
+3. **Using Sage AI**:
+   - Navigate to the **Sage AI** tab in the navbar for instant AI-powered support.
+   - Use quick suggestion buttons or type your own message.
+
+4. **Community Wall**:
+   - Go to the **Community** tab to view anonymous posts.
+   - Log in to share your thoughts, like posts, and leave comments.
+   - All activity is anonymous — your identity is never revealed.
 
 ## 📄 License
 This project is licensed under the ISC License.
