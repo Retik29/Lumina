@@ -15,11 +15,13 @@ import MeditationPage from './pages/MeditationPage'
 import ExercisePage from './pages/ExercisePage'
 import StrategyPage from './pages/StrategyPage'
 import ProtectedRoute from './components/ProtectedRoute'
+import ScrollToTop from './components/ScrollToTop'
 import { AuthProvider } from './context/AuthContext'
 
 function App() {
     return (
         <AuthProvider>
+            <ScrollToTop />
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
