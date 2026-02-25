@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '@/lib/api'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -13,10 +13,12 @@ export default function Login() {
     const [formData, setFormData] = useState({ email: '', password: '' })
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [message, setMessage] = useState({ type: '', text: '' }) 
-    
+    const [message, setMessage] = useState({ type: '', text: '' })
+
     const { login } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
+    const from = location.state?.from
 
     const handleLogin = async (e) => {
         e.preventDefault()
@@ -36,7 +38,9 @@ export default function Login() {
                 }
 
                 setTimeout(() => {
-                    if (data.role === 'student') window.location.href = '/student-dashboard'
+                    if (from) {
+                        window.location.href = from
+                    } else if (data.role === 'student') window.location.href = '/student-dashboard'
                     else if (data.role === 'counselor') window.location.href = '/counselor-dashboard'
                     else if (data.role === 'admin') window.location.href = '/admin'
                     else window.location.href = '/'
@@ -44,9 +48,9 @@ export default function Login() {
             }
         } catch (error) {
             console.error('Login error:', error)
-            setMessage({ 
-                type: 'error', 
-                text: error.response?.data?.message || 'Failed to authenticate. Please check your credentials.' 
+            setMessage({
+                type: 'error',
+                text: error.response?.data?.message || 'Failed to authenticate. Please check your credentials.'
             })
             setIsLoading(false)
         }
@@ -54,7 +58,7 @@ export default function Login() {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
-        if (message.text) setMessage({ type: '', text: '' }) 
+        if (message.text) setMessage({ type: '', text: '' })
     }
 
     const roles = [
@@ -65,9 +69,9 @@ export default function Login() {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background">
-            
+
             {/* Back to Home Button */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
@@ -87,14 +91,14 @@ export default function Login() {
                 <div className="absolute bottom-0 right-10 w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[100px] animate-pulse delay-1000" />
             </div>
 
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ type: "spring", stiffness: 100, damping: 20 }}
                 className="w-full max-w-lg z-10"
             >
                 <Card className="w-full p-8 sm:p-12 border-white/40 bg-white/40 backdrop-blur-xl shadow-2xl rounded-[2.5rem] relative overflow-hidden">
-                    
+
                     {/* Header */}
                     <div className="text-center space-y-3 mb-10">
                         <h1 className="text-3xl md:text-4xl font-serif text-foreground tracking-tight">
@@ -107,7 +111,7 @@ export default function Login() {
 
                     {/* Form Area */}
                     <div className="space-y-8">
-                        
+
                         {/* Custom Role Selector (Pill Style) */}
                         <div className="flex bg-white/50 backdrop-blur-md p-1.5 rounded-full border border-white/40 shadow-sm relative">
                             {roles.map((r) => {
@@ -143,13 +147,11 @@ export default function Login() {
                                     initial={{ opacity: 0, height: 0, y: -10 }}
                                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                                     exit={{ opacity: 0, height: 0, y: -10 }}
-                                    className={`overflow-hidden rounded-2xl ${
-                                        message.type === 'error' ? 'bg-destructive/5 text-destructive' : 'bg-primary/5 text-primary'
-                                    }`}
+                                    className={`overflow-hidden rounded-2xl ${message.type === 'error' ? 'bg-destructive/5 text-destructive' : 'bg-primary/5 text-primary'
+                                        }`}
                                 >
-                                    <div className={`p-4 border text-sm flex items-start gap-3 rounded-2xl ${
-                                        message.type === 'error' ? 'border-destructive/10' : 'border-primary/10'
-                                    }`}>
+                                    <div className={`p-4 border text-sm flex items-start gap-3 rounded-2xl ${message.type === 'error' ? 'border-destructive/10' : 'border-primary/10'
+                                        }`}>
                                         <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                                         <p className="leading-relaxed">{message.text}</p>
                                     </div>
@@ -201,8 +203,8 @@ export default function Login() {
                                 </div>
                             </div>
 
-                            <Button 
-                                type="submit" 
+                            <Button
+                                type="submit"
                                 disabled={isLoading}
                                 className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-primary text-lg font-medium transition-all active:scale-95 disabled:opacity-70 disabled:hover:scale-100 mt-4"
                             >

@@ -29,6 +29,7 @@ app.use('/api/appointment', require('./routes/appointmentRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/chatbot', require('./routes/chatbotRoutes'));
 app.use('/api/community', require('./routes/communityRoutes'));
+app.use('/api/activity', require('./routes/activityRoutes'));
 
 // Root route
 app.get('/', (req, res) => {

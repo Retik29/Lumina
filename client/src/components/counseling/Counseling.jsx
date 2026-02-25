@@ -4,13 +4,15 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, Clock, User, CheckCircle2, AlertCircle, Sparkles, ShieldCheck } from "lucide-react"
+import { Calendar, Clock, User, CheckCircle2, AlertCircle, Sparkles, ShieldCheck, LogIn, HeartHandshake } from "lucide-react"
 import api from '@/lib/api'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from "motion/react"
+import { useAuth } from '@/context/AuthContext'
 
 export default function CounselingComponent() {
     const navigate = useNavigate()
+    const { user } = useAuth()
     const [formData, setFormData] = useState({
         counselorId: "",
         date: "",
@@ -25,8 +27,8 @@ export default function CounselingComponent() {
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        fetchCounselors()
-    }, [])
+        if (user) fetchCounselors()
+    }, [user])
 
     const fetchCounselors = async () => {
         try {
@@ -82,9 +84,9 @@ export default function CounselingComponent() {
 
     const itemVariants = {
         hidden: { opacity: 0, y: 20 },
-        show: { 
-            opacity: 1, 
-            y: 0, 
+        show: {
+            opacity: 1,
+            y: 0,
             transition: { type: "spring", stiffness: 100, damping: 20 }
         }
     }
@@ -103,11 +105,11 @@ export default function CounselingComponent() {
                             Your session request has been gently sent to the counselor. You'll be redirected to your dashboard momentarily.
                         </p>
                         <div className="w-12 h-1 bg-primary/20 rounded-full overflow-hidden">
-                            <motion.div 
-                                initial={{ width: 0 }} 
-                                animate={{ width: "100%" }} 
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: "100%" }}
                                 transition={{ duration: 3, ease: "linear" }}
-                                className="h-full bg-primary" 
+                                className="h-full bg-primary"
                             />
                         </div>
                     </div>
@@ -116,6 +118,46 @@ export default function CounselingComponent() {
         )
     }
 
+    // ─── Logged-out state: show login gate ────────────────
+    if (!user) {
+        return (
+            <div className="space-y-12 relative z-10 w-full max-w-4xl mx-auto">
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none -z-10" />
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="max-w-xl mx-auto"
+                >
+                    <Card className="p-10 sm:p-12 bg-card/40 backdrop-blur-xl border-border/40 shadow-lg rounded-[2.5rem] text-center space-y-5">
+                        <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
+                            <HeartHandshake className="w-7 h-7 text-primary" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-serif font-medium text-foreground mb-2">Book a Counseling Session</h3>
+                            <p className="text-muted-foreground font-light leading-relaxed max-w-md mx-auto">
+                                Log in to connect with professional counselors, schedule sessions, and get personalized mental health support.
+                            </p>
+                        </div>
+                        <Button asChild className="rounded-full px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/15">
+                            <Link to="/login">
+                                <LogIn className="w-4 h-4 mr-2" />
+                                Log In to Book a Session
+                            </Link>
+                        </Button>
+                        <p className="text-sm text-muted-foreground pt-1">
+                            Don't have an account?{' '}
+                            <Link to="/register" className="text-primary font-medium hover:underline underline-offset-4">
+                                Sign up
+                            </Link>
+                        </p>
+                    </Card>
+                </motion.div>
+            </div>
+        )
+    }
+
+    // ─── Logged-in state: full counseling experience ─────
     return (
         <div className="space-y-12 relative z-10 w-full max-w-4xl mx-auto">
             {/* Ambient Background Glow */}
@@ -128,14 +170,14 @@ export default function CounselingComponent() {
             <Tabs defaultValue="counselors" className="w-full flex flex-col items-center relative z-10">
                 {/* Minimal Pill Tabs */}
                 <TabsList className="flex w-auto mx-auto h-auto bg-white/40 backdrop-blur-md border border-white/40 p-1.5 rounded-full shadow-sm mb-12">
-                    <TabsTrigger 
-                        value="counselors" 
+                    <TabsTrigger
+                        value="counselors"
                         className="rounded-full px-8 py-3 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
                     >
                         Select Counselor
                     </TabsTrigger>
-                    <TabsTrigger 
-                        value="request" 
+                    <TabsTrigger
+                        value="request"
                         className="rounded-full px-8 py-3 text-sm font-medium transition-all data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
                     >
                         Reserve Session
@@ -153,7 +195,7 @@ export default function CounselingComponent() {
                             <p className="text-xl font-serif italic text-muted-foreground">No counselors available at the moment.</p>
                         </div>
                     ) : (
-                        <motion.div 
+                        <motion.div
                             variants={containerVariants}
                             initial="hidden"
                             animate="show"
@@ -178,12 +220,12 @@ export default function CounselingComponent() {
                                                 <div className="flex-1">
                                                     <h3 className="text-xl font-serif text-foreground mb-1">{counselor.name}</h3>
                                                     <p className="text-xs uppercase tracking-widest text-primary font-bold mb-4">{counselor.email}</p>
-                                                    
+
                                                     <div className="flex items-center gap-2 text-sm text-muted-foreground/80 font-light mb-6">
                                                         <Clock className="w-4 h-4 text-primary/50" />
                                                         Available this week
                                                     </div>
-                                                    
+
                                                     <Button
                                                         size="sm"
                                                         className={`w-full rounded-full transition-all duration-300 font-medium
@@ -206,14 +248,14 @@ export default function CounselingComponent() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
                         <Card className="p-8 md:p-12 bg-white/40 backdrop-blur-xl border-white/40 shadow-xl shadow-primary/5 rounded-[2.5rem]">
                             <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
-                                
+
                                 {error && (
                                     <div className="p-4 rounded-2xl bg-destructive/5 border border-destructive/10 text-destructive text-sm flex items-center gap-3">
                                         <AlertCircle className="w-5 h-5 shrink-0" />
                                         {error}
                                     </div>
                                 )}
-                                
+
                                 {!formData.counselorId && !error && (
                                     <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 text-primary/80 text-sm flex items-center gap-3">
                                         <ShieldCheck className="w-5 h-5 shrink-0" />

@@ -11,6 +11,10 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import StudentDashboard from './pages/StudentDashboard'
 import CounselorDashboard from './pages/CounselorDashboard'
+import MeditationPage from './pages/MeditationPage'
+import ExercisePage from './pages/ExercisePage'
+import StrategyPage from './pages/StrategyPage'
+import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 
 function App() {
@@ -22,7 +26,26 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/chatbot" element={<Chatbot />} />
                 <Route path="/assessment" element={<Assessment />} />
-                <Route path="/resources" element={<Resources />} />
+                <Route path="/resources" element={
+                    <ProtectedRoute>
+                        <Resources />
+                    </ProtectedRoute>
+                } />
+                <Route path="/resources/meditation/:type" element={
+                    <ProtectedRoute>
+                        <MeditationPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/resources/exercises/:type" element={
+                    <ProtectedRoute>
+                        <ExercisePage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/resources/strategies/:slug" element={
+                    <ProtectedRoute>
+                        <StrategyPage />
+                    </ProtectedRoute>
+                } />
                 <Route path="/community" element={<Community />} />
                 <Route path="/counseling" element={<Counseling />} />
                 <Route path="/emergency" element={<Emergency />} />

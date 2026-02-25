@@ -45,8 +45,8 @@ export default function CommunityComponent() {
     }, [])
 
     useEffect(() => {
-        fetchPosts()
-    }, [fetchPosts])
+        if (user) fetchPosts()
+    }, [fetchPosts, user])
 
     useEffect(() => {
         if (successMsg) {
@@ -175,6 +175,45 @@ export default function CommunityComponent() {
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     }
 
+    // ─── Logged-out state: show full login gate ───────────
+    if (!user) {
+        return (
+            <div className="space-y-8 relative z-10 w-full max-w-3xl mx-auto">
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none -z-10" />
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <Card className="p-10 sm:p-12 bg-card/40 backdrop-blur-xl border-border/40 shadow-lg rounded-[2.5rem] text-center space-y-5">
+                        <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
+                            <LogIn className="w-7 h-7 text-primary" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-serif font-medium text-foreground mb-2">Join the Conversation</h3>
+                            <p className="text-muted-foreground font-light leading-relaxed max-w-md mx-auto">
+                                Log in to share your thoughts, like posts, and comment — all anonymously. Your identity is always protected.
+                            </p>
+                        </div>
+                        <Button asChild className="rounded-full px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/15">
+                            <Link to="/login">
+                                <LogIn className="w-4 h-4 mr-2" />
+                                Log In to Participate
+                            </Link>
+                        </Button>
+                        <p className="text-sm text-muted-foreground pt-1">
+                            Don't have an account?{' '}
+                            <Link to="/register" className="text-primary font-medium hover:underline underline-offset-4">
+                                Sign up
+                            </Link>
+                        </p>
+                    </Card>
+                </motion.div>
+            </div>
+        )
+    }
+
+    // ─── Logged-in state: full community experience ──────
     return (
         <div className="space-y-8 relative z-10 w-full max-w-3xl mx-auto">
 
@@ -210,67 +249,41 @@ export default function CommunityComponent() {
             </AnimatePresence>
 
             {/* Create Post Section */}
-            {user ? (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Card className="p-2 bg-card/60 backdrop-blur-xl border-border/40 shadow-xl shadow-primary/5 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 focus-within:bg-card/80 focus-within:shadow-2xl">
-                        <div className="p-4 sm:p-6 space-y-4">
-                            <Textarea
-                                placeholder="Share your thoughts anonymously..."
-                                value={newPost}
-                                onChange={(e) => setNewPost(e.target.value)}
-                                className="min-h-32 resize-none border-none bg-accent/50 focus-visible:ring-0 text-lg font-serif leading-relaxed placeholder:font-sans placeholder:text-base placeholder:font-light p-2 px-4 shadow-none"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault()
-                                        handlePost()
-                                    }
-                                }}
-                            />
-                            <div className="flex justify-between items-center pt-2 border-t border-border/20">
-                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground/50 font-medium">
-                                    Posted Anonymously
-                                </p>
-                                <Button
-                                    onClick={handlePost}
-                                    disabled={!newPost.trim() || posting}
-                                    className="rounded-full px-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:hover:scale-100 font-medium"
-                                >
-                                    {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <PenLine className="w-4 h-4 mr-2" />}
-                                    Share
-                                </Button>
-                            </div>
-                        </div>
-                    </Card>
-                </motion.div>
-            ) : (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Card className="p-8 bg-card/40 backdrop-blur-xl border-border/40 shadow-lg rounded-[2.5rem] text-center space-y-4">
-                        <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
-                            <LogIn className="w-7 h-7 text-primary" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-serif font-medium text-foreground mb-1">Join the Conversation</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Log in to share your thoughts, like posts, and comment — all anonymously.
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <Card className="p-2 bg-card/60 backdrop-blur-xl border-border/40 shadow-xl shadow-primary/5 rounded-[2.5rem] relative overflow-hidden group transition-all duration-500 focus-within:bg-card/80 focus-within:shadow-2xl">
+                    <div className="p-4 sm:p-6 space-y-4">
+                        <Textarea
+                            placeholder="Share your thoughts anonymously..."
+                            value={newPost}
+                            onChange={(e) => setNewPost(e.target.value)}
+                            className="min-h-32 resize-none border-none bg-accent/50 focus-visible:ring-0 text-lg font-serif leading-relaxed placeholder:font-sans placeholder:text-base placeholder:font-light p-2 px-4 shadow-none"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault()
+                                    handlePost()
+                                }
+                            }}
+                        />
+                        <div className="flex justify-between items-center pt-2 border-t border-border/20">
+                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground/50 font-medium">
+                                Posted Anonymously
                             </p>
+                            <Button
+                                onClick={handlePost}
+                                disabled={!newPost.trim() || posting}
+                                className="rounded-full px-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:hover:scale-100 font-medium"
+                            >
+                                {posting ? <Loader2 className="w-4 h-4 animate-spin" /> : <PenLine className="w-4 h-4 mr-2" />}
+                                Share
+                            </Button>
                         </div>
-                        <Button asChild className="rounded-full px-8 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md">
-                            <Link to="/login">
-                                <LogIn className="w-4 h-4 mr-2" />
-                                Log In to Participate
-                            </Link>
-                        </Button>
-                    </Card>
-                </motion.div>
-            )}
+                    </div>
+                </Card>
+            </motion.div>
 
             {/* Feed Section */}
             <div className="space-y-6">
