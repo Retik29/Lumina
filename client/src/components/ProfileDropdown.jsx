@@ -42,7 +42,7 @@ export default function ProfileDropdown() {
                 aria-label="User menu"
             >
                 {user?.name ? (
-                    <span className="text-lg font-bold">
+                    <span className="text-lg font-semibold text-background">
                         {user.name.charAt(0).toUpperCase()}
                     </span>
                 ) : (
