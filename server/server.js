@@ -22,7 +22,6 @@ app.use(cors({
 }));
 
 
-app.options("*", cors());
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/appointment', require('./routes/appointmentRoutes'));
