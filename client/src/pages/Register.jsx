@@ -18,7 +18,7 @@ export default function Register() {
     })
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [message, setMessage] = useState({ type: '', text: '' }) 
+    const [message, setMessage] = useState({ type: '', text: '' })
 
     const navigate = useNavigate()
 
@@ -31,9 +31,9 @@ export default function Register() {
             const { data } = await api.post('/auth/register', { ...formData, role })
             if (data.success) {
                 if (role === 'counselor') {
-                    setMessage({ 
-                        type: 'success', 
-                        text: 'Registration successful! Your account is pending approval. Redirecting to login...' 
+                    setMessage({
+                        type: 'success',
+                        text: 'Registration successful! Your account is pending approval. Redirecting to login...'
                     })
                     setTimeout(() => {
                         window.location.href = '/login'
@@ -43,9 +43,9 @@ export default function Register() {
                         ...data,
                         token: data.token
                     }))
-                    setMessage({ 
-                        type: 'success', 
-                        text: `Welcome to your sanctuary, ${data.name}. Redirecting...` 
+                    setMessage({
+                        type: 'success',
+                        text: `Welcome to your sanctuary, ${data.name}. Redirecting...`
                     })
                     setTimeout(() => {
                         window.location.href = '/'
@@ -54,9 +54,9 @@ export default function Register() {
             }
         } catch (error) {
             console.error('Registration error:', error)
-            setMessage({ 
-                type: 'error', 
-                text: error.response?.data?.message || 'Failed to create your account. Please try again.' 
+            setMessage({
+                type: 'error',
+                text: error.response?.data?.message || 'Failed to create your account. Please try again.'
             })
             setIsLoading(false)
         }
@@ -75,9 +75,9 @@ export default function Register() {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background">
-            
+
             {/* Back to Home Button */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
@@ -97,14 +97,14 @@ export default function Register() {
                 <div className="absolute bottom-0 right-10 w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[100px] animate-pulse delay-1000" />
             </div>
 
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ type: "spring", stiffness: 100, damping: 20 }}
                 className="w-full max-w-lg z-10 py-12"
             >
                 <Card className="w-full p-8 sm:p-12 border-white/40 bg-white/40 backdrop-blur-xl shadow-2xl rounded-[2.5rem] relative overflow-hidden">
-                    
+
                     {/* Header */}
                     <div className="text-center space-y-3 mb-10">
                         <h1 className="text-3xl md:text-4xl font-serif text-foreground tracking-tight">
@@ -117,7 +117,7 @@ export default function Register() {
 
                     {/* Form Area */}
                     <div className="space-y-8">
-                        
+
                         {/* Custom Role Selector (Pill Style) */}
                         <div className="flex bg-white/50 backdrop-blur-md p-1.5 rounded-full border border-white/40 shadow-sm relative">
                             {roles.map((r) => {
@@ -153,13 +153,11 @@ export default function Register() {
                                     initial={{ opacity: 0, height: 0, y: -10 }}
                                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                                     exit={{ opacity: 0, height: 0, y: -10 }}
-                                    className={`overflow-hidden rounded-2xl ${
-                                        message.type === 'error' ? 'bg-destructive/5 text-destructive' : 'bg-primary/5 text-primary'
-                                    }`}
+                                    className={`overflow-hidden rounded-2xl ${message.type === 'error' ? 'bg-destructive/5 text-destructive' : 'bg-primary/5 text-primary'
+                                        }`}
                                 >
-                                    <div className={`p-4 border text-sm flex items-start gap-3 rounded-2xl ${
-                                        message.type === 'error' ? 'border-destructive/10' : 'border-primary/10'
-                                    }`}>
+                                    <div className={`p-4 border text-sm flex items-start gap-3 rounded-2xl ${message.type === 'error' ? 'border-destructive/10' : 'border-primary/10'
+                                        }`}>
                                         {message.type === 'error' ? (
                                             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                                         ) : (
@@ -179,7 +177,7 @@ export default function Register() {
                                     id="name"
                                     name="name"
                                     type="text"
-                                    placeholder="John Doe"
+                                    placeholder="Retik Yadav"
                                     required
                                     value={formData.name}
                                     onChange={handleChange}
@@ -193,7 +191,7 @@ export default function Register() {
                                     id="email"
                                     name="email"
                                     type="email"
-                                    placeholder="name@example.com"
+                                    placeholder="rk@example.com"
                                     required
                                     value={formData.email}
                                     onChange={handleChange}
@@ -264,8 +262,8 @@ export default function Register() {
                                 )}
                             </AnimatePresence>
 
-                            <Button 
-                                type="submit" 
+                            <Button
+                                type="submit"
                                 disabled={isLoading}
                                 className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-primary text-lg font-medium transition-all active:scale-95 disabled:opacity-70 disabled:hover:scale-100 mt-6"
                             >
