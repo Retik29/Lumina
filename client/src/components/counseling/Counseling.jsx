@@ -1,18 +1,83 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, Clock, User, CheckCircle2, AlertCircle, Sparkles, ShieldCheck, LogIn, HeartHandshake } from "lucide-react"
+import { Calendar, Clock, User, CheckCircle2, AlertCircle, Sparkles, ShieldCheck, LogIn, HeartHandshake, ArrowRight, CalendarClock } from "lucide-react"
 import api from '@/lib/api'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from "motion/react"
 import { useAuth } from '@/context/AuthContext'
 
+// ─── Deterministic availability generator ─────────────────
+function hashCode(str) {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i)
+        hash = ((hash << 5) - hash) + char
+        hash |= 0
+    }
+    return Math.abs(hash)
+}
+
+const AVAILABILITY_POOL = [
+    { label: "Available today", color: "green", selectable: true, slots: 5 },
+    { label: "Available now", color: "green", selectable: true, slots: 4 },
+    { label: "2 slots left today", color: "amber", selectable: true, slots: 2 },
+    { label: "1 slot left today", color: "amber", selectable: true, slots: 1 },
+    { label: "Next slot: Tomorrow, 10:00 AM", color: "amber", selectable: true, slots: 3 },
+    { label: "Next slot: Tomorrow, 2:30 PM", color: "amber", selectable: true, slots: 2 },
+    { label: "Available Wed, 11:00 AM", color: "amber", selectable: true, slots: 1 },
+    { label: "3 slots left this week", color: "amber", selectable: true, slots: 3 },
+    { label: "Fully booked this week", color: "red", selectable: false, slots: 0 },
+    { label: "Next available: Mon, Mar 9", color: "red", selectable: false, slots: 0 },
+]
+
+function getAvailability(counselorId, index) {
+    const hash = hashCode(counselorId || String(index))
+    // Ensure at least one "available" counselor by making index 0 always green
+    if (index === 0) return AVAILABILITY_POOL[0]
+    return AVAILABILITY_POOL[hash % AVAILABILITY_POOL.length]
+}
+
+// ─── Availability badge component ─────────────────────────
+function AvailabilityBadge({ availability }) {
+    const dotColor = {
+        green: "bg-emerald-500",
+        amber: "bg-amber-500",
+        red: "bg-red-400",
+    }[availability.color]
+
+    const textColor = {
+        green: "text-emerald-700",
+        amber: "text-amber-700",
+        red: "text-red-500",
+    }[availability.color]
+
+    const bgColor = {
+        green: "bg-emerald-50",
+        amber: "bg-amber-50",
+        red: "bg-red-50",
+    }[availability.color]
+
+    return (
+        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${bgColor}`}>
+            <span className="relative flex h-2 w-2">
+                {availability.color === "green" && (
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${dotColor} opacity-75`} />
+                )}
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${dotColor}`} />
+            </span>
+            <span className={`text-xs font-medium ${textColor}`}>{availability.label}</span>
+        </div>
+    )
+}
+
 export default function CounselingComponent() {
     const navigate = useNavigate()
     const { user } = useAuth()
+    const [activeTab, setActiveTab] = useState("counselors")
     const [formData, setFormData] = useState({
         counselorId: "",
         date: "",
@@ -43,6 +108,15 @@ export default function CounselingComponent() {
         }
     }
 
+    // Build availability map once counselors are loaded
+    const availabilityMap = useMemo(() => {
+        const map = {}
+        counselors.forEach((c, i) => {
+            map[c._id] = getAvailability(c._id, i)
+        })
+        return map
+    }, [counselors])
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setSubmitting(true)
@@ -71,6 +145,8 @@ export default function CounselingComponent() {
     }
 
     const selectCounselor = (id) => {
+        const availability = availabilityMap[id]
+        if (!availability?.selectable) return
         setFormData({ ...formData, counselorId: id })
     }
 
@@ -90,6 +166,9 @@ export default function CounselingComponent() {
             transition: { type: "spring", stiffness: 100, damping: 20 }
         }
     }
+
+    // Find the selected counselor's name for the proceed button
+    const selectedCounselor = counselors.find(c => c._id === formData.counselorId)
 
     if (submitted) {
         return (
@@ -167,7 +246,7 @@ export default function CounselingComponent() {
             <div className="text-center space-y-2 shrink-0 relative z-10">
             </div>
 
-            <Tabs defaultValue="counselors" className="w-full flex flex-col items-center relative z-10">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex flex-col items-center relative z-10">
                 {/* Minimal Pill Tabs */}
                 <TabsList className="flex w-auto mx-auto h-auto bg-white/40 backdrop-blur-md border border-white/40 p-1.5 rounded-full shadow-sm mb-12">
                     <TabsTrigger
@@ -195,52 +274,96 @@ export default function CounselingComponent() {
                             <p className="text-xl font-serif italic text-muted-foreground">No counselors available at the moment.</p>
                         </div>
                     ) : (
-                        <motion.div
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="show"
-                            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                        >
-                            {counselors.map((counselor) => {
-                                const isSelected = formData.counselorId === counselor._id
-                                return (
-                                    <motion.div key={counselor._id} variants={itemVariants}>
-                                        <Card
-                                            onClick={() => selectCounselor(counselor._id)}
-                                            className={`p-8 bg-white/40 backdrop-blur-xl border-white/40 rounded-[2.5rem] group cursor-pointer transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5
-                                                ${isSelected ? 'ring-2 ring-primary bg-white/80 shadow-lg' : 'shadow-sm'}
-                                            `}
-                                        >
-                                            <div className="flex items-start gap-5">
-                                                <div className={`w-14 h-14 rounded-3xl flex items-center justify-center transition-colors duration-500 shadow-sm
-                                                    ${isSelected ? 'bg-primary text-white' : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white'}
-                                                `}>
-                                                    <User className="w-6 h-6" />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <h3 className="text-xl font-serif text-foreground mb-1">{counselor.name}</h3>
-                                                    <p className="text-xs uppercase tracking-widest text-primary font-bold mb-4">{counselor.email}</p>
-
-                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground/80 font-light mb-6">
-                                                        <Clock className="w-4 h-4 text-primary/50" />
-                                                        Available this week
+                        <>
+                            <motion.div
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="show"
+                                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                            >
+                                {counselors.map((counselor) => {
+                                    const isSelected = formData.counselorId === counselor._id
+                                    const availability = availabilityMap[counselor._id]
+                                    const isBookable = availability?.selectable
+                                    return (
+                                        <motion.div key={counselor._id} variants={itemVariants}>
+                                            <Card
+                                                onClick={() => isBookable && selectCounselor(counselor._id)}
+                                                className={`p-8 bg-white/40 backdrop-blur-xl border-white/40 rounded-[2.5rem] group transition-all duration-500
+                                                    ${isBookable ? 'cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5' : 'opacity-60 cursor-not-allowed'}
+                                                    ${isSelected ? 'ring-2 ring-primary bg-white/80 shadow-lg' : 'shadow-sm'}
+                                                `}
+                                            >
+                                                <div className="flex items-start gap-5">
+                                                    <div className={`w-14 h-14 rounded-3xl flex items-center justify-center transition-colors duration-500 shadow-sm
+                                                        ${isSelected ? 'bg-primary text-white' : isBookable ? 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white' : 'bg-muted text-muted-foreground'}
+                                                    `}>
+                                                        <User className="w-6 h-6" />
                                                     </div>
+                                                    <div className="flex-1">
+                                                        <h3 className="text-xl font-serif text-foreground mb-1">{counselor.name}</h3>
+                                                        <p className="text-xs uppercase tracking-widest text-primary font-bold mb-3">{counselor.email}</p>
 
-                                                    <Button
-                                                        size="sm"
-                                                        className={`w-full rounded-full transition-all duration-300 font-medium
-                                                            ${isSelected ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-card text-foreground border border-border shadow-sm hover:bg-primary hover:text-primary-foreground'}
-                                                        `}
-                                                    >
-                                                        {isSelected ? 'Selected Guide' : 'Choose Guide'}
-                                                    </Button>
+                                                        <div className="mb-5">
+                                                            {availability && <AvailabilityBadge availability={availability} />}
+                                                        </div>
+
+                                                        <Button
+                                                            size="sm"
+                                                            disabled={!isBookable}
+                                                            className={`w-full rounded-full transition-all duration-300 font-medium
+                                                                ${!isBookable
+                                                                    ? 'bg-muted text-muted-foreground border border-border cursor-not-allowed'
+                                                                    : isSelected
+                                                                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                                                        : 'bg-card text-foreground border border-border shadow-sm hover:bg-primary hover:text-primary-foreground'
+                                                                }
+                                                            `}
+                                                        >
+                                                            {!isBookable ? 'Unavailable' : isSelected ? 'Selected Guide ✓' : 'Choose Guide'}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        </motion.div>
+                                    )
+                                })}
+                            </motion.div>
+
+                            {/* Proceed to Session CTA */}
+                            <AnimatePresence>
+                                {formData.counselorId && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20, scale: 0.97 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.97 }}
+                                        transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                                        className="mt-10 flex justify-center"
+                                    >
+                                        <Card className="p-6 sm:p-8 bg-white/60 backdrop-blur-xl border-white/40 shadow-xl shadow-primary/10 rounded-[2rem] flex flex-col sm:flex-row items-center gap-5 max-w-xl w-full">
+                                            <div className="flex items-center gap-4 flex-1 min-w-0">
+                                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                                                    <CalendarClock className="w-5 h-5 text-primary" />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="text-sm text-muted-foreground font-light">Your selected guide</p>
+                                                    <p className="text-lg font-serif text-foreground truncate">
+                                                        {selectedCounselor?.name}
+                                                    </p>
                                                 </div>
                                             </div>
+                                            <Button
+                                                onClick={() => setActiveTab("request")}
+                                                className="rounded-full px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all active:scale-95 font-medium text-base group/btn w-full sm:w-auto"
+                                            >
+                                                Proceed to Session
+                                                <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                                            </Button>
                                         </Card>
                                     </motion.div>
-                                )
-                            })}
-                        </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </>
                     )}
                 </TabsContent>
 
@@ -260,6 +383,13 @@ export default function CounselingComponent() {
                                     <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 text-primary/80 text-sm flex items-center gap-3">
                                         <ShieldCheck className="w-5 h-5 shrink-0" />
                                         Please select a guide from the previous tab before reserving your session.
+                                    </div>
+                                )}
+
+                                {formData.counselorId && selectedCounselor && (
+                                    <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 text-sm flex items-center gap-3">
+                                        <CheckCircle2 className="w-5 h-5 shrink-0" />
+                                        <span>Booking with <strong className="font-semibold">{selectedCounselor.name}</strong> — Fill in your preferred time below.</span>
                                     </div>
                                 )}
 
