@@ -119,8 +119,8 @@ export default function BreathingTimer({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className={`fixed inset-0 z-50 flex flex-col items-center justify-center ${darkMode
-                    ? "bg-[hsl(220,30%,6%)] text-[hsl(210,25%,92%)]"
-                    : "bg-background/98 backdrop-blur-xl"
+                ? "bg-[hsl(220,30%,6%)] text-[hsl(210,25%,92%)]"
+                : "bg-background/98 backdrop-blur-xl"
                 }`}
         >
             <Button
@@ -174,8 +174,8 @@ export default function BreathingTimer({
                     animate={{ scale: getScale() }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                     className={`w-40 h-40 rounded-full flex items-center justify-center ${darkMode
-                            ? "bg-[hsl(200,60%,15%)] shadow-[0_0_60px_hsl(200,80%,50%,0.15)]"
-                            : "bg-primary/10 shadow-[0_0_60px_hsl(210,85%,70%,0.15)]"
+                        ? "bg-[hsl(200,60%,15%)] shadow-[0_0_60px_hsl(200,80%,50%,0.15)]"
+                        : "bg-primary/10 shadow-[0_0_60px_hsl(210,85%,70%,0.15)]"
                         }`}
                 >
                     <AnimatePresence mode="wait">
@@ -208,8 +208,8 @@ export default function BreathingTimer({
                 onClick={() => setIsRunning(prev => !prev)}
                 variant="outline"
                 className={`rounded-full px-10 py-6 text-base font-medium transition-all ${darkMode
-                        ? "border-[hsl(215,25%,22%)] bg-[hsl(220,30%,11%)] text-[hsl(210,25%,85%)] hover:bg-[hsl(220,30%,15%)]"
-                        : "border-primary/20 hover:bg-primary/5"
+                    ? "border-[hsl(215,25%,22%)] bg-[hsl(220,30%,11%)] text-[hsl(210,25%,85%)] hover:bg-[hsl(220,30%,15%)]"
+                    : "border-primary/20 hover:bg-primary/5"
                     }`}
             >
                 {isRunning ? (

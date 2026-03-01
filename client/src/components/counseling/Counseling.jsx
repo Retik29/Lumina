@@ -229,7 +229,7 @@ export default function CounselingComponent() {
                                                     <Button
                                                         size="sm"
                                                         className={`w-full rounded-full transition-all duration-300 font-medium
-                                                            ${isSelected ? 'bg-primary text-white hover:bg-primary/90' : 'bg-white text-foreground border border-black/5 shadow-sm hover:bg-primary hover:text-white'}
+                                                            ${isSelected ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-card text-foreground border border-border shadow-sm hover:bg-primary hover:text-primary-foreground'}
                                                         `}
                                                     >
                                                         {isSelected ? 'Selected Guide' : 'Choose Guide'}
@@ -321,7 +321,7 @@ export default function CounselingComponent() {
                                 <Button
                                     type="submit"
                                     disabled={submitting || !formData.counselorId}
-                                    className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary h-14 text-lg font-medium shadow-xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none mt-4"
+                                    className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground h-14 text-lg font-medium shadow-xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none mt-4"
                                 >
                                     {submitting ? 'Securing your spot...' : 'Reserve Session'}
                                 </Button>

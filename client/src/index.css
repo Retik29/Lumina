@@ -42,18 +42,29 @@
   --animate-float: float 3s ease-in-out infinite;
 
   @keyframes gradient {
-    0%, 100% {
+
+    0%,
+    100% {
       background-size: 200% 200%;
       background-position: left center;
     }
+
     50% {
       background-size: 200% 200%;
       background-position: right center;
     }
   }
+
   @keyframes float {
-    0%, 100% { transform: translateY(0px) }
-    50% { transform: translateY(-10px) }
+
+    0%,
+    100% {
+      transform: translateY(0px)
+    }
+
+    50% {
+      transform: translateY(-10px)
+    }
   }
 }
 
@@ -126,6 +137,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
@@ -146,14 +158,12 @@
   }
 
   .warm-gradient {
-    background: linear-gradient(
-      135deg,
-      hsl(230, 60%, 99%) 0%,
-      hsl(225, 55%, 96%) 25%,
-      hsl(232, 65%, 94%) 50%,
-      hsl(240, 60%, 97%) 75%,
-      hsl(260, 55%, 98%) 100%
-    );
+    background: linear-gradient(135deg,
+        hsl(230, 60%, 99%) 0%,
+        hsl(225, 55%, 96%) 25%,
+        hsl(232, 65%, 94%) 50%,
+        hsl(240, 60%, 97%) 75%,
+        hsl(260, 55%, 98%) 100%);
   }
 
   .soothing-glass {
@@ -163,6 +173,7 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -171,12 +182,15 @@
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
+
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-transparent rounded-full;
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/10;
   }
